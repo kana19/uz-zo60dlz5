@@ -1,0 +1,175 @@
+/* ============================================================
+   ipad-input.css — iPad 売上・コスト入力フォームの最適化
+   ------------------------------------------------------------
+   sales.html / cost.html が読み込むモーダル版フォーム
+   （sheet-modal.css / sales-modal.css / cost-modal.css）を、
+   iPad の広い右カラム向けに上書きする。
+   ロジック・DOM構造はスマホと共有（MD §6-3-B）。見た目のみ iPad 専用。
+   配色はモノトーン濃淡のみ（00_原則.md §5-9）。縦線を使わず横線と余白で整理。
+   スマホ（is-ipad なし）には一切影響しない。
+   ============================================================ */
+
+/* ── 右カラム内フォームの土台 ─────────────────────────────
+   モーダル（画面下シート）前提の sticky フッター・負マージン・
+   fixed トーストを、右カラム埋め込み用に補正する。 */
+body.is-ipad #ipad-tab-add {
+  padding: 0;
+}
+
+body.is-ipad .sales-sm-body,
+body.is-ipad .cost-sm-body {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 8px 24px 24px;
+}
+
+/* sticky ヘッダー（発生日・区分）：右カラム上部に追従 */
+body.is-ipad .sm-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 0 24px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+body.is-ipad .sm-sticky-row {
+  padding: 14px 0;
+}
+body.is-ipad .sm-sticky-date-input {
+  height: 46px;
+  font-size: 17px;
+}
+
+/* ── セクション：横線で区切り、見出し高さを揃える ───────── */
+body.is-ipad .sales-sm-section,
+body.is-ipad .cost-sm-section {
+  padding: 11px 0;
+}
+body.is-ipad .sales-sm-label,
+body.is-ipad .cost-sm-label {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+/* ── サービス／科目カード：3列グリッド・区分タブと縦幅統一 ──
+   縦幅の冗長を解消（min-height を区分タブ 46px 相当に揃え、販管費の
+   多件数を3列で収める）。02_画面仕様.md §5-10。 */
+body.is-ipad .sales-sm-cards,
+body.is-ipad #sm-cost-item-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px;
+}
+/* radio-card（売上モーダル）・sales-sm-card・cost-sm-card 全対応 */
+body.is-ipad .sales-sm-cards .radio-card,
+body.is-ipad .sales-sm-card,
+body.is-ipad .cost-sm-card {
+  min-height: 46px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+body.is-ipad .sales-sm-cards .radio-card__label,
+body.is-ipad .sales-sm-card__label,
+body.is-ipad .cost-sm-card__label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+body.is-ipad .sales-sm-cards .radio-card__sub {
+  font-size: 12px;
+  color: var(--uz-text2);
+  margin-top: 4px;
+}
+
+/* ── 区分タブ（コスト）：横幅を活かす ───────────────────── */
+body.is-ipad .cost-sm-division-tabs {
+  gap: 12px;
+}
+body.is-ipad .cost-sm-division-tab {
+  height: 46px;
+  font-size: 15px;
+}
+
+/* ── 税率チップ：大きめ・横並び ─────────────────────────── */
+body.is-ipad .sm-taxrate-chips {
+  gap: 12px;
+  margin: 10px 0 6px;
+}
+body.is-ipad .sm-taxrate-chip {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 15px;
+  text-align: center;
+  border-radius: 12px;
+}
+
+/* ── 金額入力：大きく・視認性重視 ───────────────────────── */
+body.is-ipad .sales-sm-amount-input,
+body.is-ipad .cost-sm-amount-input {
+  min-height: 60px;
+  font-size: 32px;
+  padding: 10px 18px;
+  border-radius: 12px;
+}
+body.is-ipad .sales-sm-yen,
+body.is-ipad .cost-sm-yen {
+  font-size: 20px;
+  line-height: 60px;
+}
+body.is-ipad .sm-tax-memo {
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* ── 諸口名称・メモ・スタッフ選択：横幅活用 ─────────────── */
+body.is-ipad .sales-sm-memo,
+body.is-ipad .cost-sm-memo {
+  min-height: 50px;
+  font-size: 16px;
+  padding: 12px 14px;
+}
+
+/* ── 売掛・買掛チェック：行を大きく押しやすく ───────────── */
+body.is-ipad .uncollected-check-row,
+body.is-ipad .cost-sm-unpaid-toggle {
+  font-size: 16px;
+  padding: 8px 0;
+}
+body.is-ipad .uncollected-check,
+body.is-ipad .cost-sm-unpaid-toggle input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+}
+
+/* ── フッター送信ボタン：右カラム下部に追従（負マージン解除）─ */
+body.is-ipad .sales-sm-footer,
+body.is-ipad .cost-sm-footer {
+  position: sticky;
+  bottom: 0;
+  margin: 0;
+  padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  background: var(--uz-surface);
+}
+body.is-ipad .sales-sm-submit-btn,
+body.is-ipad .cost-sm-submit-btn {
+  min-height: 54px;
+  font-size: 17px;
+  border-radius: 12px;
+}
+
+/* ── トースト：fixed のまま画面下中央でOK（モーダルと同じ）─ */
+body.is-ipad .cost-sm-toast,
+body.is-ipad .sales-sm-toast {
+  bottom: 32px;
+}
+
+/* ── 隠れている iPad 旧UI（ipad-form-wrap）は base.css で
+      display:none 済み。ここでは触らない。 ── */

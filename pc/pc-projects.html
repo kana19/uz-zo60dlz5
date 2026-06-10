@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>案件管理 | ウルトラZAIMUくんレオ</title>
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="css/pc.css">
+</head>
+<body class="pc-body">
+<div id="pc-app" class="pc-layout">
+  <main class="pc-main" id="pc-main">
+    <div class="pc-body-inner">
+
+      <!-- 月選択＋サマリー＋新規案件ボタン -->
+      <section class="pc-projects-toolbar">
+        <label class="pc-projects-month-label">対象月
+          <select id="pj-month" class="pc-select"></select>
+        </label>
+        <div class="pc-projects-summary" id="pj-summary"></div>
+        <button type="button" id="btn-new-project" class="pc-btn pc-btn--ghost">+ 新規案件</button>
+      </section>
+
+      <!-- 案件カードリスト -->
+      <section id="pj-list" class="pc-projects-list">
+        <div class="loading">読み込み中…</div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- 紐付け候補モーダル（monthly.html と同一DOM構造・共通CSS適用） -->
+<div class="pc-link-candidates-modal" id="pc-link-candidates-modal" hidden>
+  <div class="pc-link-candidates-backdrop" data-action="cancel"></div>
+  <div class="pc-link-candidates-panel" role="dialog" aria-modal="true" aria-labelledby="pc-link-candidates-title">
+    <header class="pc-link-candidates-header">
+      <h2 id="pc-link-candidates-title">紐付け候補を選択</h2>
+      <button type="button" class="pc-link-candidates-close" aria-label="閉じる" data-action="cancel">×</button>
+    </header>
+    <div class="pc-link-candidates-target" id="pc-link-candidates-target" hidden></div>
+    <p class="pc-link-candidates-hint" id="pc-link-candidates-hint"></p>
+    <div class="pc-link-candidates-list" id="pc-link-candidates-list" role="group"></div>
+    <p class="pc-link-candidates-error" id="pc-link-candidates-error" hidden></p>
+    <footer class="pc-link-candidates-footer">
+      <button type="button" class="pc-btn pc-btn-secondary" data-action="cancel">取消</button>
+      <button type="button" class="pc-btn pc-btn-primary" data-action="confirm" id="pc-link-candidates-confirm">確定</button>
+    </footer>
+  </div>
+</div>
+
+<!-- 削除確認モーダル（指示書15・月次管理＋案件管理 共用 DOM 構造） -->
+<div class="pc-link-candidates-modal" id="pc-delete-confirm-modal" hidden>
+  <div class="pc-link-candidates-backdrop" data-action="cancel"></div>
+  <div class="pc-link-candidates-panel" role="dialog" aria-modal="true" aria-labelledby="pc-delete-confirm-title">
+    <header class="pc-link-candidates-header">
+      <h2 id="pc-delete-confirm-title">行を削除しますか？</h2>
+      <button type="button" class="pc-link-candidates-close" aria-label="閉じる" data-action="cancel">×</button>
+    </header>
+    <div class="pc-delete-confirm-body">
+      <div class="pc-delete-target-info" id="pc-delete-target-info"></div>
+      <div class="pc-delete-warning" id="pc-delete-warning" hidden></div>
+    </div>
+    <p class="pc-link-candidates-error" id="pc-delete-confirm-error" hidden></p>
+    <footer class="pc-link-candidates-footer">
+      <button type="button" class="pc-btn pc-btn-secondary" data-action="cancel">キャンセル</button>
+      <button type="button" class="pc-btn pc-btn-danger" data-action="confirm" id="pc-delete-confirm-btn">削除する</button>
+    </footer>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="js/pc-common.js"></script>
+<script src="js/pc-projects.js"></script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+/* ============================================================
+   uz-input.css — 売上・コスト入力フォーム（正本・全項目並列＋積層スタッキング）
+   ------------------------------------------------------------
+   02_画面仕様.md §5-10。uz-input.js が .uzf-host に描画する単一系統フォーム。
+   ・全項目（発生日／区分・科目／金額）を常時並べる（高さ不変）。
+   ・各見出し .uzf-head は sticky。スクロールで上部に到達した順に固定され積み下がる。
+   ・テンキー入力中も上部に確定見出しが残り視認できる。
+   配色は 00_原則.md §5-9 モノトーン濃淡のみ・トークン経由。
+   ============================================================ */
+
+.uzf-host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  font-family: var(--font-main);
+}
+/* スマホ（モーダル）：スクロールは .sm-body に任せ、見出しは sm-body に sticky 固定 */
+.uzf-host[data-uzf-modal] { height: auto; overflow: visible; }
+
+/* ── 積層見出し（sticky スタッキング） ───────────────────── */
+.uzf-head {
+  position: sticky;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0 18px;
+  background: var(--uz-text);
+  color: var(--uz-on-accent);
+  border-bottom: 1px solid var(--uz-surface);
+  cursor: pointer;
+}
+.uzf-head[data-stick="0"] { top: 0;    z-index: 9; }
+.uzf-head[data-stick="1"] { top: 32px; z-index: 8; }
+.uzf-head[data-stick="2"] { top: 64px; z-index: 7; }
+.uzf-sh-k { font-size: 15px; opacity: 0.6; flex: 0 0 54px; }
+.uzf-sh-v { flex: 1; font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uzf-sh-tax { flex: 0 0 auto; font-size: 13px; font-weight: 600; opacity: 0.85; white-space: nowrap; }
+
+/* ── 各項目本体 ─────────────────────────────────────────── */
+.uzf-body { padding: 12px 18px; }
+.uzf-head[data-stick="0"] + .uzf-body { padding-top: 4px; }
+.uzf-ed-sub { font-size: 12px; color: var(--uz-text2); margin: 16px 0 8px; }
+
+/* 区分タブ（仕入原価／販管費） */
+.uzf-divtabs { display: flex; gap: 10px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--uz-border); }
+.uzf-divtab {
+  flex: 1; height: 42px;
+  border: 1px solid var(--uz-border); border-radius: 10px;
+  background: var(--uz-bg); font-family: inherit; font-size: 15px; font-weight: 600;
+  color: var(--uz-text); cursor: pointer;
+}
+.uzf-divtab.is-active { background: var(--uz-text); color: var(--uz-on-accent); border-color: var(--uz-text); }
+
+/* 科目カード：列数は uzf-cards--2 / --3 で指定（売上・仕入=2／販管費=3） */
+.uzf-cards { display: grid; gap: 8px; }
+.uzf-cards--2 { grid-template-columns: 1fr 1fr; }
+.uzf-cards--3 { grid-template-columns: repeat(3, 1fr); }
+.uzf-cards-empty { color: var(--uz-text2); font-size: 13px; padding: 8px 0; }
+.uzf-card {
+  min-height: 44px; padding: 8px 10px;
+  border: 1px solid var(--uz-border); border-radius: 10px;
+  background: var(--uz-bg); font-family: inherit; font-size: 14px; font-weight: 600;
+  color: var(--uz-text); cursor: pointer; line-height: 1.25;
+}
+.uzf-card.is-active { background: var(--uz-text); color: var(--uz-on-accent); border-color: var(--uz-text); }
+
+/* 諸口名称 */
+.uzf-misc { margin-top: 14px; }
+.uzf-misc[hidden] { display: none; }
+.uzf-misc-label { display: block; font-size: 12px; color: var(--uz-text2); margin-bottom: 8px; }
+.uzf-misc-input {
+  width: 100%; height: 44px; padding: 0 14px; box-sizing: border-box;
+  border: 1px solid var(--uz-border); border-radius: 10px;
+  font-size: 15px; font-family: inherit; background: var(--uz-bg); color: var(--uz-text);
+}
+
+/* 税率チップ */
+.uzf-taxchips { display: flex; gap: 10px; }
+.uzf-taxchip {
+  flex: 1; height: 42px;
+  border: 1px solid var(--uz-border); border-radius: 10px;
+  background: var(--uz-bg); font-family: inherit; font-size: 15px; font-weight: 600;
+  color: var(--uz-text); cursor: pointer;
+}
+.uzf-taxchip.is-active { background: var(--uz-text); color: var(--uz-on-accent); border-color: var(--uz-text); }
+
+/* 金額表示＋自作テンキー（内消費税は金額の黒帯右端へ移動・テンキー押し上げ） */
+.uzf-amount-disp {
+  font-size: 30px; font-weight: 700; text-align: right; color: var(--uz-text);
+  font-variant-numeric: tabular-nums; padding: 4px 4px; border-bottom: 2px solid var(--uz-text);
+}
+.uzf-amount-yen { font-size: 16px; font-weight: 400; margin-left: 6px; color: var(--uz-text2); }
+.uzf-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.uzf-key {
+  height: 44px;
+  border: 1px solid var(--uz-border); border-radius: 10px;
+  background: var(--uz-bg); font-family: inherit; font-size: 22px; font-weight: 600;
+  color: var(--uz-text); cursor: pointer;
+  touch-action: manipulation;            /* 連打時のダブルタップ拡大を抑止 */
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.uzf-key:active { background: var(--uz-surface); }
+.uzf-key--del, .uzf-key--clear { font-size: 15px; color: var(--uz-text2); }
+
+/* 最終行：クリア（00の真下・数字と同寸）。下にメモとの区切り線。 */
+.uzf-keypad-last { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-items: center; margin-top: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--uz-border); }
+.uzf-keypad-last .uzf-key--clear { grid-column: 1; }
+
+/* メモ：枠内プレースホルダ・高さはテンキー数字ボタンと統一・区切り線の下へ配置 */
+.uzf-memo {
+  width: 100%; height: 44px; padding: 11px 14px; box-sizing: border-box; margin-top: 12px;
+  border: 1px solid var(--uz-border); border-radius: 10px; line-height: 1.3;
+  font-size: 15px; font-family: inherit; background: var(--uz-bg); color: var(--uz-text); resize: none;
+}
+.uzf-memo::placeholder { color: var(--uz-text2); }
+
+/* tail：買掛/売掛トグル（登録直上）＋登録ボタン。上方向にスライド可能な余白を確保。 */
+.uzf-tail { padding: 12px 18px 96px; }
+.uzf-toggle { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--uz-text); padding: 4px 2px 10px; cursor: pointer; }
+.uzf-toggle input { width: 22px; height: 22px; accent-color: var(--uz-gold); flex: 0 0 auto; }
+.uzf-submit {
+  width: 100%; min-height: 50px;
+  border: none; border-radius: 12px;
+  background: var(--uz-surface2); color: var(--uz-text-muted);
+  font-family: inherit; font-size: 17px; font-weight: 700; cursor: not-allowed;
+  transition: background 0.15s, color 0.15s;
+}
+.uzf-submit:enabled { background: var(--uz-text); color: var(--uz-on-accent); cursor: pointer; }
+.uzf-submit:enabled:active { filter: brightness(1.2); }
+.uzf-delete {
+  width: 100%; min-height: 46px; margin-top: 10px;
+  background: var(--uz-bg); color: var(--uz-text);
+  border: 1px solid var(--uz-border2); border-radius: 12px;
+  font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.uzf-delete:active { filter: brightness(0.95); }
+.uzf-cancel {
+  width: 100%; min-height: 40px; margin-top: 6px;
+  background: transparent; color: var(--uz-text2);
+  border: none; border-radius: 8px;
+  font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.uzf-cancel:active { color: var(--uz-text); }
+
+/* ── 登録後・修正の詳細表示①（§5-10）─────────────────── */
+.uzf-head--ro { position: static; cursor: default; }
+.uzf-det-actions { display: flex; gap: 10px; padding: 16px 18px 96px; }
+.uzf-detbtn {
+  flex: 1; min-height: 50px;
+  border-radius: 12px;
+  font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+.uzf-det-edit { border: none; background: var(--uz-text); color: var(--uz-on-accent); }
+.uzf-det-edit:active { filter: brightness(1.2); }
+.uzf-det-close { background: var(--uz-bg); color: var(--uz-text); border: 1px solid var(--uz-border2); font-size: 14px; letter-spacing: -0.01em; }
+.uzf-det-close:active { filter: brightness(0.95); }
+
+/* 自作カレンダー（枠線なし・やや上へ） */
+.uzf-cal { border: none; border-radius: 12px; padding: 0 4px; }
+.uzf-cal-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.uzf-cal-title { font-size: 15px; font-weight: 700; color: var(--uz-text); }
+.uzf-cal-nav {
+  width: 34px; height: 32px; border: 1px solid var(--uz-border); border-radius: 10px;
+  background: var(--uz-bg); font-size: 18px; color: var(--uz-text); cursor: pointer;
+}
+.uzf-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.uzf-cal-dow { text-align: center; font-size: 11px; color: var(--uz-text2); padding: 1px 0; }
+.uzf-cal-cell {
+  height: 34px; border: none; background: transparent; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: inherit; font-size: 14px; color: var(--uz-text); cursor: pointer;
+}
+.uzf-cal-cell.is-sel { background: var(--uz-text); color: var(--uz-on-accent); font-weight: 700; }
+.uzf-cal-empty { cursor: default; }
+
+/* トースト（showToast 不在時のフォールバック） */
+.uzf-toast {
+  position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%);
+  background: var(--uz-text); color: var(--uz-on-accent);
+  padding: 12px 24px; border-radius: 10px; font-size: 14px;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 800;
+}
+.uzf-toast.show { opacity: 1; }
+
+/* スマホ（モーダル）：背景の日時がギリギリ見える高さに抑える */
+.sm-sheet.sm-sheet--tall { height: 74vh; max-height: 74vh; }
+@media (max-width: 480px) {
+  .uzf-key { height: 40px; font-size: 20px; }
+  .uzf-memo { height: 40px; }
+  .uzf-amount-disp { font-size: 26px; }
+  .uzf-body { padding: 12px 16px; }
+}
+
+/* ── iPad 月次管理(history) 右カラム：見出し sticky（積み下がり）を効かせる ──
+   スクロールは元から .ipad-hist-right（max-height:100vh; overflow-y:auto）が担う。
+   中間の overflow（.ipad-right-panel / .ipad-tab-content / .uzf-host）が
+   sticky を閉じ込めて積み下がらない原因のため、それらを解除する。
+   見出し(.uzf-head top:0/42/84)は .ipad-hist-right を基準に上端から順に積み下がる。 */
+body.is-ipad .ipad-right-panel.hist-right--input { overflow: visible; height: auto; }
+body.is-ipad .hist-right--input .ipad-tab-content { overflow: visible; padding: 0 0 24px; }
+body.is-ipad .hist-right--input .uzf-host { height: auto; overflow: visible; }
+/* 入力タブバー(売上を追加/コストを追加)を最上部に固定し、発生日の黒帯以上を常時可視に。
+   売上/コストどちらを入力中かを入力途中も視認できる。見出しの sticky top を
+   タブバー高さ分（約48px）下げて、タブバー→発生日→区分/科目→金額の順に積み下がる。 */
+body.is-ipad .hist-right--input .ipad-input-tabs {
+  position: sticky; top: 0; z-index: 11; background: var(--uz-surface);
+}
+/* ⑤ iPad は入力黒帯ヘッドを勤怠の黒帯（.ci-head＝48px）と同じ高さに戻す。
+   スマホ（モーダル）は 32px のまま詰める。積層オフセットも48px連動。 */
+body.is-ipad .uzf-head { height: 48px; }
+body.is-ipad .hist-right--input .uzf-head[data-stick="0"] { top: 46px; }
+body.is-ipad .hist-right--input .uzf-head[data-stick="1"] { top: 94px; }
+body.is-ipad .hist-right--input .uzf-head[data-stick="2"] { top: 142px; }
+/* iPad 修正パネル（タブバーなし）：見出し sticky は黒帯高さ48px基準の 0/48/96 */
+body.is-ipad .hist-right--edit .uzf-head[data-stick="0"] { top: 0; }
+body.is-ipad .hist-right--edit .uzf-head[data-stick="1"] { top: 48px; }
+body.is-ipad .hist-right--edit .uzf-head[data-stick="2"] { top: 96px; }
+body.is-ipad .hist-right--edit .ipad-right-panel__header { padding: 12px 18px; }

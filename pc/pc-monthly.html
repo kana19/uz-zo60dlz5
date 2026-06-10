@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>月次管理 | ウルトラZAIMUくんレオ</title>
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="css/pc.css">
+</head>
+<body class="pc-body">
+<div id="pc-app" class="pc-layout">
+  <main class="pc-main" id="pc-main">
+    <div class="pc-body-inner">
+
+      <!-- 月フィルタは廃止（指示書9§1：今月固定・列見出しフィルタで代替） -->
+
+      <!-- 行追加ボタン＋ページャ（指示書11§3：20件ページング・テーブル上部右） -->
+      <section class="pc-add-buttons">
+        <button type="button" id="btn-add-sales">+ 売上行を追加</button>
+        <button type="button" id="btn-add-cost">+ コスト行を追加</button>
+        <div class="pc-pagination" id="monthly-pagination" hidden>
+          <button type="button" id="page-newer" hidden>← 次の20件</button>
+          <span id="page-info"></span>
+          <button type="button" id="page-older" hidden>前の20件 →</button>
+        </div>
+      </section>
+
+      <!-- フラットテーブル（code列廃止・指示書5§2-1 / 技術仕様§9-4） -->
+      <section class="pc-table-wrap">
+        <table class="pc-monthly-table" id="monthly-table">
+          <thead>
+            <tr>
+              <th data-filter-col="date">発生日</th>
+              <th data-filter-col="type">種別</th>
+              <th data-filter-col="subject">科目</th>
+              <th class="num">金額(税込)</th>
+              <th data-filter-col="taxRate">税率</th>
+              <th class="num">消費税</th>
+              <th data-filter-col="memo">メモ</th>
+              <th data-filter-col="project">案件</th>
+            </tr>
+            <!-- フィルタ集計行（指示書8-6§2）：thead 直下に sticky 配置・各列セルに集計値を直接表示 -->
+            <tr class="monthly-summary-row" id="monthly-summary-row" hidden>
+              <td class="monthly-summary-cell" data-summary-col="count"></td>
+              <td></td>
+              <td></td>
+              <td class="num monthly-summary-cell" data-summary-col="amount"></td>
+              <td></td>
+              <td class="num monthly-summary-cell" data-summary-col="tax"></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody id="monthly-tbody">
+            <tr><td colspan="8" class="loading">読み込み中…</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- 紐付け候補モーダル（指示書5§2-4・JS から開閉する） -->
+<div class="pc-link-candidates-modal" id="pc-link-candidates-modal" hidden>
+  <div class="pc-link-candidates-backdrop" data-action="cancel"></div>
+  <div class="pc-link-candidates-panel" role="dialog" aria-modal="true" aria-labelledby="pc-link-candidates-title">
+    <header class="pc-link-candidates-header">
+      <h2 id="pc-link-candidates-title">紐付け候補を選択</h2>
+      <button type="button" class="pc-link-candidates-close" aria-label="閉じる" data-action="cancel">×</button>
+    </header>
+    <!-- 対象取引情報ヘッダー（指示書6§2 / 技術仕様§9-4-1）：sticky 表示で常時識別可能 -->
+    <div class="pc-link-candidates-target" id="pc-link-candidates-target" hidden></div>
+    <p class="pc-link-candidates-hint" id="pc-link-candidates-hint"></p>
+    <div class="pc-link-candidates-list" id="pc-link-candidates-list" role="group"></div>
+    <p class="pc-link-candidates-error" id="pc-link-candidates-error" hidden></p>
+    <footer class="pc-link-candidates-footer">
+      <button type="button" class="pc-btn pc-btn-secondary" data-action="cancel">取消</button>
+      <button type="button" class="pc-btn pc-btn-primary" data-action="confirm" id="pc-link-candidates-confirm">確定</button>
+    </footer>
+  </div>
+</div>
+
+<!-- 削除確認モーダル（指示書15・月次管理＋案件管理 共用 DOM 構造） -->
+<div class="pc-link-candidates-modal" id="pc-delete-confirm-modal" hidden>
+  <div class="pc-link-candidates-backdrop" data-action="cancel"></div>
+  <div class="pc-link-candidates-panel" role="dialog" aria-modal="true" aria-labelledby="pc-delete-confirm-title">
+    <header class="pc-link-candidates-header">
+      <h2 id="pc-delete-confirm-title">行を削除しますか？</h2>
+      <button type="button" class="pc-link-candidates-close" aria-label="閉じる" data-action="cancel">×</button>
+    </header>
+    <div class="pc-delete-confirm-body">
+      <div class="pc-delete-target-info" id="pc-delete-target-info"></div>
+      <div class="pc-delete-warning" id="pc-delete-warning" hidden></div>
+    </div>
+    <p class="pc-link-candidates-error" id="pc-delete-confirm-error" hidden></p>
+    <footer class="pc-link-candidates-footer">
+      <button type="button" class="pc-btn pc-btn-secondary" data-action="cancel">キャンセル</button>
+      <button type="button" class="pc-btn pc-btn-danger" data-action="confirm" id="pc-delete-confirm-btn">削除する</button>
+    </footer>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="js/pc-common.js"></script>
+<script src="js/pc-monthly.js"></script>
+</body>
+</html>

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>履歴・修正 — ウルトラZAIMUくん</title>
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/pages.css?v=20260531c">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/sheet-modal.css">
+  <link rel="stylesheet" href="css/sales-modal.css">
+  <link rel="stylesheet" href="css/cost-modal.css">
+  <link rel="stylesheet" href="css/ipad-input.css">
+  <link rel="stylesheet" href="css/uz-input.css">
+  <style>
+    /* ══════════════════════════════════════════════════════════
+       上部完全固定構造（A-9整流化・最終版）
+       sticky の連鎖が実機で不安定だった経緯を踏まえ、
+       スマホ時は page-wrapper 自体を flex で縦分割し、
+         上段：history-header + hist-fixed-top（flex-shrink:0 で固定）
+         下段：hist-scroll-area（flex:1 + overflow-y:auto でスクロール）
+       とすることで100%確実な固定を実現する。
+       ══════════════════════════════════════════════════════════ */
+    body[data-page="history"]:not(.is-ipad) .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      padding-bottom: 0; /* base.css の bottom padding を打ち消す */
+    }
+    body[data-page="history"]:not(.is-ipad) .history-header {
+      flex-shrink: 0;
+      background: var(--uz-bg, #fff);
+      z-index: 50;
+    }
+    body[data-page="history"]:not(.is-ipad) .ipad-hist-wrap {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    body[data-page="history"]:not(.is-ipad) .ipad-hist-left {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .hist-fixed-top {
+      background: var(--uz-bg, #fff);
+    }
+    body[data-page="history"]:not(.is-ipad) .hist-fixed-top {
+      flex-shrink: 0;
+      box-shadow: 0 1px 0 var(--uz-border);
+      z-index: 40;
+    }
+    body[data-page="history"]:not(.is-ipad) .hist-scroll-area {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 16px);
+    }
+
+    /* ── タブ ── */
+    .hist-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--uz-border);
+      background: var(--uz-surface);
+    }
+    .hist-tab {
+      flex: 1;
+      padding: 12px 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--uz-muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-family: var(--font-main);
+      transition: color .15s, border-color .15s;
+    }
+    .hist-tab--active { color: var(--uz-text); border-bottom-color: var(--uz-text); }
+    .hist-tab-content { display: none; }
+    .hist-tab-content--active { display: block; }
+
+    /* ── 月ナビ・フィルタ・新規登録ボタンは通常配置（sticky は親に委譲） ── */
+    .hist-month-nav { background: var(--uz-surface); }
+    .hist-filter-bar { background: var(--uz-surface); }
+    .ci-open-btn-wrap {
+      background: var(--uz-surface);
+      padding: 12px 16px 8px;
+    }
+
+    /* hidden 属性を確実に効かせる（switchTab がタブ連動で出し分け）
+       pages.css 等で .hist-filter-bar に display:flex が指定されている可能性に備え、
+       ID + !important で詳細度を最大化する */
+    #fixed-filter-bar[hidden],
+    #fixed-salescost-add[hidden],
+    #fixed-attend-bar[hidden] {
+      display: none !important;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       出勤履歴：Grid整列レイアウト（A-9整流化・最終版）
+       カラム：スタッフ名 | 出勤時刻 | → | 退勤時刻 | 勤務時間or状態 | 編集
+       全行で時刻位置・矢印位置・退勤位置が完全に揃う
+       見本：「不明           09:30 → 14:00  (4.50H)  [編集]」
+            「●●コンパニオン…   14:50 →   —    勤務中   [編集]」
+       ══════════════════════════════════════════════════════════ */
+    .hist-date-group { padding: 2px 0 4px; }
+    .hist-date-header {
+      padding: 6px 16px 2px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--uz-text);
+    }
+    .hist-attend-row {
+      display: grid;
+      /* 名前80px｜出勤時刻｜→｜退勤時刻｜状態(ドット+勤務時間)｜編集(右端)
+         名前を80pxに詰めて開始時刻の右寄りを解消し、編集まで1行に収める。
+         最終トラック1frに編集を入れ右端寄せ、それ以外は名前直後に左詰め。 */
+      grid-template-columns: 80px auto 12px auto auto 1fr;
+      align-items: center;
+      column-gap: 5px;
+      padding: 5px 16px;
+      font-size: 13px;
+      color: var(--uz-text);
+    }
+    /* スタッフ名：固定幅・2段（名前＋雇用形態の補助表示） */
+    .hist-attend-name {
+      min-width: 0;
+      width: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--uz-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hist-attend-emp {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--uz-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hist-attend-time-in,
+    .hist-attend-time-out {
+      font-size: 13px;
+      color: var(--uz-text);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .hist-attend-arrow {
+      font-size: 13px;
+      color: var(--uz-muted);
+      text-align: center;
+    }
+    .hist-attend-time-out--empty { color: var(--uz-text3); }
+    /* 勤務時間（4.50H）：時刻と同サイズ・グレー寄り */
+    .hist-attend-dur {
+      font-size: 13px;
+      color: var(--uz-muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      margin-left: 4px;
+    }
+
+    /* 勤務状態バッジ（勤務中＝黄色弱・未記録＝赤系）。退勤時刻列の右隣に配置
+       「勤務中」と「未記録」で枠幅を統一するため min-width 指定 */
+    .attend-state-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 0;
+      min-width: 52px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-family: var(--font-main);
+      white-space: nowrap;
+      margin-left: 4px;
+      text-align: center;
+    }
+    .attend-state-badge--working {
+      background: var(--uz-marker-active-bg, rgba(229,185,57,0.14));
+      color: var(--uz-marker-active, #E5B939);
+    }
+    .attend-state-badge--forgotten {
+      background: var(--uz-red-bg, rgba(192,57,43,0.08));
+      color: var(--uz-red, #C0392B);
+    }
+
+    /* 異常値・翌日表示の特殊文字色（残置） */
+    .attend-time-abnormal { color: var(--uz-red, #C0392B); }
+    .attend-time-overnight {
+      font-size: 10px;
+      padding: 1px 4px;
+      margin-right: 2px;
+      background: rgba(59,130,246,.12);
+      color: #3b82f6;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* ── 編集ボタン（売上コスト履歴と統一）
+       A-9：padding不足で「編集」文字が枠右端からはみ出ていたバグを修正
+       padding 3px 10px → 4px 14px に拡大、line-height 1.4 で縦余裕も確保 */
+    .hist-edit-btn {
+      font-size: 11px;
+      padding: 4px 14px;
+      line-height: 1.4;
+      border-radius: 20px;
+      border: 0.5px solid var(--uz-border2);
+      cursor: pointer;
+      font-family: var(--font-main);
+      font-weight: 600;
+      background: var(--uz-amber-bg);
+      color: var(--uz-text);
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .hist-edit-btn--grace { background: var(--uz-red-bg); border-color: rgba(224,80,80,0.3); color: var(--uz-red); }
+    .hist-grace-badge {
+      font-size: 10px;
+      color: var(--uz-red);
+      white-space: nowrap;
+      display: block;
+      text-align: right;
+      margin-top: 1px;
+    }
+    .hist-locked-badge {
+      font-size: 11px;
+      color: var(--uz-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── 修正フォーム バックドロップ ── */
+    .edit-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .edit-backdrop--show { opacity: 1; pointer-events: auto; }
+
+    /* ── 修正フォーム パネル（上部スライドイン） ── */
+    .edit-panel {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--uz-surface);
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.55);
+      z-index: 301;
+      max-height: 92vh;
+      overflow-y: auto;
+      transform: translateY(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .edit-panel--open { transform: translateY(0); }
+
+    .edit-panel__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--uz-border);
+      position: sticky;
+      top: 0;
+      background: var(--uz-surface);
+      z-index: 1;
+    }
+    .edit-panel__title { font-size: 16px; font-weight: 700; color: var(--uz-text); }
+    .edit-cancel-btn {
+      background: none; border: none; color: var(--uz-muted);
+      font-size: 20px; cursor: pointer; padding: 4px 8px;
+      font-family: var(--font-main); line-height: 1;
+    }
+    .edit-form-body { padding: 12px 20px 4px; }
+
+    .edit-field { margin-bottom: 14px; }
+    .edit-label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--uz-muted); margin-bottom: 6px;
+    }
+    .edit-input {
+      width: 100%; padding: 10px 12px;
+      background: var(--uz-surface2);
+      border: 1px solid var(--uz-border);
+      border-radius: 8px; color: var(--uz-text);
+      font-size: 15px; font-family: var(--font-main);
+      box-sizing: border-box; -webkit-appearance: none;
+    }
+    .edit-input:focus { outline: none; border-color: var(--uz-gold); }
+    .edit-readonly {
+      padding: 10px 12px; background: var(--uz-surface2);
+      border-radius: 8px; color: var(--uz-muted); font-size: 14px;
+    }
+    .edit-tax-note {
+      font-size: 12px; color: var(--uz-muted); margin-top: 4px; padding: 0 2px;
+    }
+    .edit-toggle-wrap {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+    }
+    .edit-toggle-label { font-size: 14px; color: var(--uz-text); }
+
+    .tax-toggle-group { display: flex; gap: 8px; }
+    .tax-toggle {
+      padding: 6px 16px; border-radius: 20px;
+      border: 1px solid var(--uz-border);
+      background: var(--uz-surface2); color: var(--uz-muted);
+      font-size: 13px; font-family: var(--font-main); cursor: pointer;
+    }
+    .tax-toggle--active {
+      background: var(--uz-text); color: var(--uz-on-accent); border-color: var(--uz-text);
+    }
+
+    .edit-panel__footer {
+      padding: 12px 20px calc(16px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--uz-border);
+      position: sticky; bottom: 0; background: var(--uz-surface);
+      display: flex; gap: 10px; align-items: center;
+    }
+    .edit-save-btn {
+      flex: 1; padding: 14px;
+      background: var(--uz-text); color: var(--uz-on-accent);
+      border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 700; font-family: var(--font-main);
+      cursor: pointer;
+    }
+    .edit-save-btn:active { filter: brightness(1.2); }
+    .edit-save-btn:disabled { background: var(--uz-surface2); color: var(--uz-text-muted); opacity: 1; cursor: not-allowed; }
+    /* 削除ボタン（編集フォーム内・全デバイス・モノトーン／00§5-9） */
+    .edit-delete-btn {
+      flex-shrink: 0; padding: 14px 18px;
+      background: var(--uz-bg); color: var(--uz-text);
+      border: 1px solid var(--uz-border2); border-radius: 10px;
+      font-size: 15px; font-weight: 700; font-family: var(--font-main);
+      cursor: pointer;
+    }
+    .edit-delete-btn:active { filter: brightness(0.95); }
+    /* iPad 右パネル：保存／削除の横並び */
+    .ipad-right-actions {
+      display: flex; gap: 10px; align-items: center; margin-top: 12px;
+    }
+    body.is-ipad .ipad-right-actions .edit-save-btn { flex: 1; margin-top: 0; }
+
+    /* ── 新規登録セクション ── */
+    .ci-section {
+      margin: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      overflow: visible;
+    }
+    .ci-head {
+      display: flex; align-items: center; gap: 12px;
+      height: 48px; box-sizing: border-box; padding: 0 18px;
+      background: var(--uz-text); color: var(--uz-on-accent);
+      border-bottom: 1px solid var(--uz-surface);
+    }
+    .ci-head__k { font-size: 15px; font-weight: 600; }
+    .ci-head__v { margin-left: auto; font-size: 15px; font-weight: 600; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ci-head__opt { font-size: 13px; font-weight: 600; opacity: 0.85; margin-left: 6px; }
+    /* 勤怠フォーム黒帯：スクロールで上端到達順に固定＝積み下がり（売上/コスト入力 uzf-head と同一機構）。
+       見出し高さ48px基準でオフセット。詳細表示(data-stick無し)は固定しない。 */
+    .sm-body .ci-head[data-stick] { position: sticky; z-index: 6; }
+    .sm-body .ci-head[data-stick="0"] { top: 0;    z-index: 9; }
+    .sm-body .ci-head[data-stick="1"] { top: 48px; z-index: 8; }
+    .sm-body .ci-head[data-stick="2"] { top: 96px; z-index: 7; }
+    .sm-body .ci-head[data-stick="3"] { top: 144px; z-index: 6; }
+    /* iPad右カラム：見出し「新規登録/詳細/修正」を左の取引/勤怠タブと同寸・同下線に統一し、
+       スタッフ黒帯以上（見出し＋スタッフ帯）を上部固定する（§5-11）。 */
+    body.is-ipad .ipad-right-panel__header {
+      font-size: 17px; font-weight: 700; color: var(--uz-text);
+      letter-spacing: 0; text-transform: none; text-align: center;
+      padding: 12px 4px; margin-bottom: 0;
+      background: var(--uz-surface);
+      border-bottom: 2px solid var(--uz-text);
+    }
+    body.is-ipad .hist-right--input .ipad-right-panel__header { position: sticky; top: 0; z-index: 12; }
+    /* 詳細/修正（角丸カード）：カード枠は残しつつ見出しをカード上端へ全幅密着させ、
+       下線を左カラムの取引/勤怠タブ・新規登録見出しと一直線（同高さ・同太さ）に揃える。 */
+    body.is-ipad .ipad-right-panel:not(.hist-right--input) > .ipad-right-panel__header {
+      margin: -16px -16px 16px;
+      padding: 12px 4px;
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
+    }
+    body.is-ipad .hist-right--input .ci-head[data-stick] { position: sticky; z-index: 6; }
+    body.is-ipad .hist-right--input .ci-head[data-stick="0"] { top: 46px;  z-index: 9; }
+    body.is-ipad .hist-right--input .ci-head[data-stick="1"] { top: 94px;  z-index: 8; }
+    body.is-ipad .hist-right--input .ci-head[data-stick="2"] { top: 142px; z-index: 7; }
+    body.is-ipad .hist-right--input .ci-head[data-stick="3"] { top: 190px; z-index: 6; }
+    .ci-body { padding: 12px 18px; }
+    .ci-section__title {
+      padding: 10px 14px 8px;
+      font-size: 12px; font-weight: 700;
+      color: var(--uz-muted); letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--uz-border);
+    }
+    .ci-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 0;
+      border-bottom: none;
+    }
+    .ci-row:last-child { border-bottom: none; }
+    .ci-row--radio { flex-wrap: wrap; gap: 6px 16px; }
+    .ci-row--submit { padding: 16px 18px 96px; }
+    .ci-radio-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 14px; color: var(--uz-text);
+      cursor: pointer; user-select: none;
+    }
+    .ci-radio-label input[type="radio"] { accent-color: var(--uz-gold); }
+    .ci-field-label {
+      font-size: 14px; font-weight: 600; color: var(--uz-text2);
+      min-width: 68px; flex-shrink: 0;
+    }
+    .ci-optional {
+      font-size: 11px; font-weight: 400;
+      color: var(--uz-muted); margin-left: 4px;
+    }
+    .ci-select {
+      flex: 1; height: 44px; padding: 0 12px;
+      background: var(--uz-bg);
+      border: 1px solid var(--uz-border); border-radius: 10px;
+      color: var(--uz-text); font-family: var(--font-main); font-size: 15px;
+      -webkit-appearance: none;
+    }
+    .ci-select:focus { outline: none; border-color: var(--uz-text); }
+    .ci-input {
+      flex: 1; height: 44px; padding: 0 12px;
+      background: var(--uz-bg);
+      border: 1px solid var(--uz-border); border-radius: 10px;
+      color: var(--uz-text); font-family: var(--font-main); font-size: 15px;
+    }
+    .ci-input::placeholder { color: var(--uz-text2); }
+    .ci-input:focus { outline: none; border-color: var(--uz-text); }
+    .ci-date-input {
+      flex: 1; height: 44px; padding: 0 12px;
+      background: var(--uz-bg);
+      border: 1px solid var(--uz-border); border-radius: 10px;
+      color: var(--uz-text); font-family: var(--font-main); font-size: 15px;
+      -webkit-appearance: none;
+    }
+    .ci-date-input:focus { outline: none; border-color: var(--uz-text); }
+    .ci-submit-btn {
+      width: 100%; min-height: 50px; padding: 10px 16px;
+      background: var(--uz-text); color: var(--uz-on-accent);
+      border: none; border-radius: 12px;
+      font-size: 17px; font-weight: 700; font-family: var(--font-main);
+      cursor: pointer; line-height: 1.4; text-align: center;
+      transition: filter 0.15s;
+    }
+    .ci-submit-btn:active { filter: brightness(1.2); }
+    .ci-submit-btn:disabled { background: var(--uz-surface2); color: var(--uz-text-muted); cursor: not-allowed; }
+
+    /* A-9：履歴画面の「退店を記録」ボタンは廃止
+       退勤入力は「編集」ボタン→修正フォームの退勤時刻欄で完結。
+       ホーム出勤状況タブの退店ボタン（.staff-clockout-btn）は維持。 */
+
+    /* ── バリデーションエラー ── */
+    .ci-field-error {
+      border-color: #e24b4a !important;
+    }
+    #ci-error-toast {
+      display: none;
+      margin: 8px 16px 0;
+      padding: 10px 14px;
+      background: #e24b4a;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    /* ── 日跨ぎバッジ ── */
+    .ci-badge-nextday {
+      font-size: 11px;
+      padding: 3px 8px;
+      background: rgba(59, 130, 246, 0.12);
+      color: #3b82f6;
+      border-radius: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── 新規登録 開くボタン ── */
+    .ci-open-btn {
+      display: block;
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--uz-amber-bg);
+      color: var(--uz-text);
+      border: 1px solid var(--uz-border2);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font-main);
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .ci-open-btn:active { background: rgba(0,0,0,0.05); }
+
+    /* ── シートモーダル内のフォーム調整 ── */
+    .sm-body .ci-section {
+      margin: 0;
+      border: none;
+      border-radius: 0;
+    }
+
+    /* iPad では sticky 解除（左カラム自体がスクロール領域） */
+    body.is-ipad .hist-fixed-top {
+      position: relative;
+      top: auto;
+      box-shadow: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       削除ボタン（全デバイス・確認必須／00§3-2）
+       配色はモノトーン濃淡のみ（00§5-9）。編集と区別するため surface2 地。
+       ══════════════════════════════════════════════════════════ */
+    .hist-del-btn {
+      font-size: 11px;
+      padding: 4px 12px;
+      line-height: 1.4;
+      border-radius: 20px;
+      border: 0.5px solid var(--uz-border);
+      cursor: pointer;
+      font-family: var(--font-main);
+      font-weight: 600;
+      background: var(--uz-surface2);
+      color: var(--uz-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      margin-left: 6px;
+    }
+    .hist-del-btn:active { opacity: 0.7; }
+
+    /* 売上コスト行（スマホ）の操作セルは編集・削除を横並び */
+    .hist-row__edit { display: flex; align-items: center; gap: 0; }
+
+    /* 出勤履歴行（スマホ）の操作（編集・削除）を最終グリッド列にまとめる */
+    .hist-attend-ops { display: flex; align-items: center; gap: 0; justify-self: end; }
+    .hist-attend-ops .hist-edit-btn { margin: 0; }
+
+    /* ══════════════════════════════════════════════════════════
+       科目別集計（iPad左カラム・▼アコーディオン）。スマホは非表示。
+       配色はモノトーン濃淡のみ（00§5-9）。
+       ══════════════════════════════════════════════════════════ */
+    .hist-breakdown { display: none; }
+    body.is-ipad .hist-breakdown {
+      display: block;
+      padding: 8px 12px 4px;
+      border-bottom: 1px solid var(--uz-border);
+    }
+    .hist-bd-group { border-bottom: 1px solid var(--uz-border); }
+    .hist-bd-group:last-child { border-bottom: none; }
+    .hist-bd-head {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-main);
+      color: var(--uz-text);
+      text-align: left;
+    }
+    .hist-bd-head[disabled] { cursor: default; opacity: 0.55; }
+    .hist-bd-caret { font-size: 10px; color: var(--uz-muted); width: 12px; flex-shrink: 0; }
+    .hist-bd-label { flex: 1; font-size: 13px; font-weight: 700; }
+    .hist-bd-total { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .hist-bd-body { padding: 0 0 10px 20px; }
+    .hist-bd-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 4px;
+      font-size: 12px;
+      color: var(--uz-text2);
+    }
+    .hist-bd-row--empty { color: var(--uz-text3); }
+    .hist-bd-amt { font-variant-numeric: tabular-nums; }
+
+    /* ══════════════════════════════════════════════════════════
+       iPad 右カラム：既定入力モード（売上/コスト/出勤の新規入力を注入）。
+       カード枠を解除し、注入フォーム（sticky フッター）が右カラムの
+       スクロール領域に追従できるようにする。
+       ══════════════════════════════════════════════════════════ */
+    body.is-ipad .ipad-right-panel.hist-right--input {
+      border: none;
+      background: transparent;
+      border-radius: 0;
+      overflow: visible;
+      padding-top: 0; /* 売上を追加/コストを追加タブを左の取引/勤怠タブと同一線に整列 */
+    }
+    body.is-ipad .ipad-right-panel.hist-right--input #hist-input-host { padding: 0; }
+    /* 新規登録ボタンは iPad では右カラムに登録フォームがあるため隠す（スタッフ絞り込みプルダウンは残す） */
+    body.is-ipad #fixed-attend-bar .ci-open-btn { display: none !important; }
+    /* 取引の売上/コスト追加ボタンも iPad は右カラム入力（売上を追加/コストを追加タブ）があるため隠す */
+    body.is-ipad #fixed-salescost-add { display: none !important; }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
+</head>
+<body data-page="history">
+
+<!-- iPad サイドバーナビ（スマホでは非表示／中身は app.js uzRenderSidebar が生成） -->
+<nav class="nav-sidebar" id="nav-sidebar" data-active="monthly" aria-label="メインナビゲーション"></nav>
+
+<div class="page-wrapper">
+
+  <!-- ページヘッダー -->
+  <header class="history-header app-header">
+    <div class="app-header__store" data-uz-brand data-uz-icon-base="icons/" data-uz-fallback="店舗名未設定"></div>
+  </header>
+
+  <!-- 承認バナー（表示条件はGAS側フラグ実装後に有効化） -->
+  <div id="approval-banner" class="approval-banner" style="display:none">
+    <div class="approval-banner__title">承認が必要な修正申請があります</div>
+    <div id="approval-banner__detail" class="approval-banner__detail"></div>
+    <div class="approval-banner__btns">
+      <button id="approval-reject-btn"  class="btn-reject">却下</button>
+      <button id="approval-approve-btn" class="btn-approve">承認する</button>
+    </div>
+  </div>
+
+  <!-- iPad 2カラムラッパー -->
+  <div class="ipad-hist-wrap">
+
+    <!-- 左カラム：履歴一覧 -->
+    <div class="ipad-hist-left">
+
+      <!-- 上段固定エリア（タブ・月ナビ・フィルタ/新規登録ボタン）
+           sticky を1階層に集約することで実機での挙動を安定化（A-9整流化） -->
+      <div class="hist-fixed-top">
+
+        <!-- タブナビゲーション -->
+        <div class="hist-tabs" role="tablist">
+          <button id="tab-salescost"
+                  class="hist-tab hist-tab--active"
+                  type="button" role="tab"
+                  aria-selected="true" aria-controls="panel-salescost">
+            取引
+          </button>
+          <button id="tab-attendance"
+                  class="hist-tab"
+                  type="button" role="tab"
+                  aria-selected="false" aria-controls="panel-attendance">
+            勤怠
+          </button>
+        </div>
+
+        <!-- 月選択ナビゲーター -->
+        <div class="hist-month-nav">
+          <button id="hist-prev" class="hist-month-btn" type="button" aria-label="前の月">
+            <i class="ti ti-chevron-left"></i>
+          </button>
+          <span id="hist-label" class="hist-month-label">読み込み中...</span>
+          <button id="hist-next" class="hist-month-btn" type="button" aria-label="次の月">
+            <i class="ti ti-chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- 取引タブ：売上/コスト追加（ホーム倣い・取引タブ時のみ表示／iPadは右カラム入力のため非表示） -->
+        <div id="fixed-salescost-add" class="hist-sc-add">
+          <button type="button" class="hist-sc-add__btn hist-sc-add__btn--sales" onclick="openSalesModal()">売上を追加</button>
+          <button type="button" class="hist-sc-add__btn hist-sc-add__btn--cost" onclick="openCostModal()">コストを追加</button>
+        </div>
+
+        <!-- フィルタバー（売上・コストタブ時のみ表示） -->
+        <div id="fixed-filter-bar" class="hist-filter-bar">
+          <button class="hist-filter-btn hist-filter-btn--active" data-filter="all" type="button">全件</button>
+          <button class="hist-filter-btn" data-filter="uncollected" type="button">売掛</button>
+          <button class="hist-filter-btn" data-filter="payable" type="button">買掛</button>
+          <span id="hist-filter-total" class="hist-filter-total" style="display:none;"></span>
+        </div>
+
+        <!-- 勤怠タブ：スタッフ／年月／雇用形態の絞り込み＋新規登録を並列（勤怠タブ時のみ表示・二段目） -->
+        <div id="fixed-attend-bar" class="hist-attend-bar" hidden>
+          <select id="attend-staff-filter" class="hist-attend-filter__select" aria-label="スタッフ絞り込み">
+            <option value="all">全スタッフ</option>
+          </select>
+          <select id="attend-month-filter" class="hist-attend-filter__select" aria-label="年月絞り込み"></select>
+          <select id="attend-emp-filter" class="hist-attend-filter__select" aria-label="雇用形態絞り込み">
+            <option value="all">全雇用形態</option>
+            <option value="employed_full">社員</option>
+            <option value="employed_temp">アルバイト</option>
+            <option value="contractor">委託外注</option>
+          </select>
+          <button id="ci-open-btn" type="button" class="ci-open-btn">
+            ＋ <span>新規登録</span>
+          </button>
+        </div>
+
+      </div><!-- /hist-fixed-top -->
+
+      <!-- スクロール領域（A-9：上部完全固定の確実実現のため flex 子要素として明示） -->
+      <div class="hist-scroll-area">
+
+        <!-- タブ1：売上・コスト -->
+        <div id="panel-salescost" class="hist-tab-content hist-tab-content--active"
+             role="tabpanel" aria-labelledby="tab-salescost">
+
+          <!-- 科目別集計（iPad左カラム・売上/仕入原価/販管費の▼アコーディオン。スマホは非表示） -->
+          <div id="hist-breakdown" class="hist-breakdown" aria-label="科目別集計"></div>
+
+          <div id="history-list"
+               class="hist-list"
+               role="region" aria-label="売上・コスト履歴">
+          </div>
+        </div>
+
+        <!-- タブ2：出勤履歴 -->
+        <div id="panel-attendance" class="hist-tab-content"
+             role="tabpanel" aria-labelledby="tab-attendance">
+
+          <!-- ▸ 出勤履歴一覧 -->
+          <div id="attendance-list"
+               role="region"
+               aria-label="出勤履歴">
+          </div>
+        </div>
+
+      </div><!-- /hist-scroll-area -->
+
+    </div><!-- /ipad-hist-left -->
+
+    <!-- 右カラム：操作パネル（iPad専用） -->
+    <div class="ipad-hist-right">
+      <div class="ipad-right-panel">
+        <div class="ipad-right-panel__header">操作パネル</div>
+        <p class="ipad-placeholder">行を選択してください</p>
+      </div>
+    </div><!-- /ipad-hist-right -->
+
+  </div><!-- /ipad-hist-wrap -->
+
+</div><!-- /page-wrapper -->
+
+<!-- ── 修正フォーム ── -->
+<div id="edit-backdrop" class="edit-backdrop" aria-hidden="true"></div>
+<div id="edit-panel" class="edit-panel" role="dialog" aria-modal="true" aria-labelledby="edit-panel-title">
+  <div class="edit-panel__header">
+    <span id="edit-panel-title" class="edit-panel__title">修正</span>
+    <button id="edit-cancel-btn" type="button" class="edit-cancel-btn" aria-label="閉じる">✕</button>
+  </div>
+  <div id="edit-form-body" class="edit-form-body">
+    <!-- history.js が描画 -->
+  </div>
+  <div class="edit-panel__footer">
+    <button id="edit-delete-btn" type="button" class="edit-delete-btn">削除</button>
+    <button id="edit-save-btn" type="button" class="edit-save-btn">保存する</button>
+  </div>
+</div>
+
+<!-- ボトムナビゲーション（スマホ用） -->
+<nav class="bottom-nav" aria-label="メインナビゲーション">
+
+  <a href="index.html" class="nav-item">
+    <i class="ti ti-planet nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">ホーム</span>
+  </a>
+
+  <a href="history.html" class="nav-item nav-item--active" aria-current="page">
+    <i class="ti ti-moon nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">月次管理</span>
+  </a>
+
+  <a href="settings.html" class="nav-item">
+    <i class="ti ti-settings nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">設定</span>
+  </a>
+</nav>
+
+<!-- ローディングオーバーレイ -->
+<div id="loading-overlay" class="loading-overlay" aria-hidden="true">
+  <div class="spinner"></div>
+</div>
+
+<!-- AIフック（フェーズ3用・削除禁止） -->
+<div id="receipt-capture-area" style="display:none"></div>
+<div id="csv-import-area"      style="display:none"></div>
+<div id="ai-suggestion-area"   style="display:none"></div>
+
+<script src="js/app.js"></script>
+<script src="js/sheet-modal.js"></script>
+<script src="js/sales.js"></script>
+<script src="js/cost.js"></script>
+<script src="js/history.js"></script>
+<script src="js/uz-input.js"></script>
+</body>
+</html>

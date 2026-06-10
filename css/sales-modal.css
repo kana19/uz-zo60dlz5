@@ -1,0 +1,248 @@
+/* css/sales-modal.css — 売上登録モーダル */
+
+.sales-sm-body {
+  padding: 4px 16px 16px;
+}
+.sales-sm-section {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--uz-border);
+}
+.sales-sm-section:last-of-type { border-bottom: none; }
+
+.sales-sm-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.sales-sm-optional {
+  font-size: 11px;
+  font-weight: normal;
+  color: var(--uz-text3);
+  margin-left: 8px;
+}
+
+/* カード一覧（科目と同サイズ・アイコンなし） */
+.sales-sm-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.sales-sm-card {
+  min-height: 48px;
+  padding: 10px 10px;
+  background: var(--uz-surface);
+  border: 1.5px solid var(--uz-border);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-main);
+  transition: background 0.15s, border-color 0.15s;
+}
+.sales-sm-card__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--uz-text);
+  line-height: 1.3;
+  word-break: keep-all;
+}
+.sales-sm-card.selected {
+  border-color: var(--uz-gold);
+  background: var(--uz-surface2);
+}
+.sales-sm-card:active { transform: scale(0.96); }
+
+/* 金額入力（横幅はみ出し修正） */
+.sales-sm-amount-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+.sales-sm-amount-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: right;
+  font-family: var(--font-main);
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  background: var(--uz-surface);
+  color: var(--uz-text);
+  box-sizing: border-box;
+}
+.sales-sm-yen {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--uz-text2);
+  line-height: 44px;
+  flex-shrink: 0;
+}
+
+/* メモ */
+.sales-sm-memo {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: var(--font-main);
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  background: var(--uz-surface);
+  color: var(--uz-text);
+  box-sizing: border-box;
+}
+
+/* 売掛チェックボックス */
+.uncollected-check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  cursor: pointer;
+  user-select: none;
+}
+.uncollected-check {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--uz-gold);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.uncollected-check-label {
+  font-size: 15px;
+  color: var(--uz-text);
+}
+
+/* 旧クラス互換 */
+.sales-sm-uncollected-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 15px;
+  color: var(--uz-text);
+  cursor: pointer;
+  user-select: none;
+}
+.sales-sm-uncollected-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--uz-gold);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* バリデーションエラー */
+input.sales-sm-field-error,
+textarea.sales-sm-field-error,
+.sales-sm-amount-input.sales-sm-field-error,
+.sales-sm-memo.sales-sm-field-error {
+  border-color: var(--uz-red) !important;
+}
+.sales-sm-cards.sales-sm-field-error {
+  outline: 2px solid var(--uz-red);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* 税率チップ */
+.sm-taxrate-chips {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+.sm-taxrate-chip {
+  padding: 6px 14px;
+  border: 1px solid var(--uz-border2);
+  border-radius: 16px;
+  background: var(--uz-surface);
+  font-size: 13px;
+  color: var(--uz-text2);
+  cursor: pointer;
+  font-family: var(--font-main);
+}
+.sm-taxrate-chip.is-active {
+  border-color: var(--uz-gold);
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  font-weight: 600;
+}
+.sm-taxrate-chip:active { transform: scale(0.96); }
+
+/* 内消費税メモ */
+.sm-tax-memo {
+  font-size: 12px;
+  color: var(--uz-text3);
+  margin-top: 4px;
+}
+
+/* トースト */
+.sales-sm-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  padding: 10px 18px;
+  background: var(--uz-red);
+  color: var(--uz-on-accent);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 600;
+  pointer-events: none;
+  display: none;
+}
+.sales-sm-toast.show {
+  display: block;
+  animation: salesSmToastIn 0.2s ease-out;
+}
+@keyframes salesSmToastIn {
+  from { opacity:0; transform: translate(-50%, 4px); }
+  to   { opacity:1; transform: translate(-50%, 0); }
+}
+
+/* フッター登録ボタン */
+.sales-sm-footer {
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  position: sticky;
+  bottom: 0;
+  background: var(--uz-surface);
+  border-top: 1px solid var(--uz-border);
+  margin: 0 -16px;
+}
+.sales-sm-submit-btn {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  background: var(--uz-gold);
+  color: var(--uz-on-accent);
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-main);
+  cursor: pointer;
+}
+.sales-sm-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.sales-sm-submit-btn:active:not(:disabled) { filter: brightness(1.05); }
+
+@media (max-width: 380px) {
+  .sales-sm-card__label { font-size: 11px; }
+  .sales-sm-amount-input { font-size: 18px; }
+}

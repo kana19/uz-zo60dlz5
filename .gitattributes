@@ -1,0 +1,8 @@
+# 改行コード方針：リポジトリ内は LF 統一・チェックアウト時もLF維持
+# Windows / macOS / Linux いずれの環境でも同一改行コードで動作させる
+* text=auto eol=lf
+*.gs text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.md text eol=lf

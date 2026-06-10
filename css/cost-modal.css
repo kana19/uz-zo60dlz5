@@ -1,0 +1,301 @@
+/* css/cost-modal.css — コスト登録シートモーダル（D案・S3g-4）
+ * sheet-modal.cssの .sm-sticky-* クラスを前提。
+ * ここには cost 固有差分（区分タブ・科目カード等）のみを記述する。
+ */
+
+/* ── body / section / label ───────────────────────────── */
+.cost-sm-body {
+  padding: 8px 16px 16px;
+}
+.cost-sm-section {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--uz-border);
+}
+.cost-sm-section:last-of-type {
+  border-bottom: none;
+}
+.cost-sm-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.cost-sm-optional {
+  font-size: 11px;
+  font-weight: normal;
+  color: var(--uz-text3);
+  margin-left: 8px;
+}
+
+/* ── 区分タブ ─────────────────────────────────────────── */
+.cost-sm-division-tabs {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+.cost-sm-division-tab {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-md);
+  background: var(--uz-surface);
+  color: var(--uz-text2);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.cost-sm-division-tab--active {
+  border-color: var(--uz-gold);
+  background: var(--uz-gold);
+  color: var(--uz-on-accent);
+}
+.cost-sm-division-tab:active {
+  transform: scale(0.98);
+}
+
+/* ── 科目カード ───────────────────────────────────────── */
+.cost-sm-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.cost-sm-card {
+  min-height: 48px;
+  padding: 10px 8px;
+  background: var(--uz-surface);
+  border: 1.5px solid var(--uz-border);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-main);
+  transition: background 0.15s, border-color 0.15s;
+}
+.cost-sm-card__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--uz-text);
+  line-height: 1.3;
+  word-break: keep-all;
+}
+.cost-sm-card--active {
+  border-color: var(--uz-gold);
+  background: var(--uz-surface2);
+}
+.cost-sm-card--active .cost-sm-card__label {
+  color: var(--uz-text);
+}
+.cost-sm-card:active {
+  transform: scale(0.96);
+}
+
+/* ── 金額入力 ─────────────────────────────────────────── */
+.cost-sm-amount-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+.cost-sm-amount-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: right;
+  font-family: var(--font-main);
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  background: var(--uz-surface);
+  color: var(--uz-text);
+  box-sizing: border-box;
+}
+.cost-sm-yen {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--uz-muted);
+  line-height: 44px;
+  flex-shrink: 0;
+}
+
+/* ── メモ ─────────────────────────────────────────────── */
+.cost-sm-memo {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: var(--font-main);
+  border: 1px solid var(--uz-border);
+  border-radius: 8px;
+  background: var(--uz-bg-surface);
+  box-sizing: border-box;
+}
+
+/* ── バリデーションエラー ─────────────────────────────── */
+/* 入力要素そのものに付与された場合（date / amount / memo） */
+input.cost-sm-field-error,
+textarea.cost-sm-field-error,
+.cost-sm-amount-input.cost-sm-field-error,
+.cost-sm-memo.cost-sm-field-error {
+  border-color: var(--uz-red, #E05050) !important;
+}
+/* コンテナ要素に付与された場合（カード群・チップ群・区分タブ群） */
+.cost-sm-cards.cost-sm-field-error,
+.cost-sm-division-tabs.cost-sm-field-error,
+.sm-taxrate-chips.cost-sm-field-error {
+  outline: 2px solid var(--uz-red, #E05050);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* ── トースト（モーダル内下部中央・赤系バナー） ───────── */
+.cost-sm-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  padding: 10px 18px;
+  background: var(--uz-red, #E05050);
+  color: var(--uz-on-accent);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 600;
+  pointer-events: none;
+  animation: costSmToastIn 0.2s ease-out;
+}
+@keyframes costSmToastIn {
+  from { opacity: 0; transform: translate(-50%, 4px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ── フッター・送信ボタン ─────────────────────────────── */
+.cost-sm-footer {
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  position: sticky;
+  bottom: 0;
+  background: var(--uz-bg-surface);
+  border-top: 1px solid var(--uz-border);
+  margin: 0 -16px;
+}
+.cost-sm-submit-btn {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  background: var(--uz-gold);
+  color: var(--uz-on-accent);
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-main);
+  cursor: pointer;
+}
+.cost-sm-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cost-sm-submit-btn:active:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+/* ── 狭幅端末（iPhone SE 等）向けの文字縮小 ─────────── */
+@media (max-width: 380px) {
+  .cost-sm-card__label  { font-size: 11px; }
+  .cost-sm-amount-input { font-size: 18px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   cost-modal.css への追記差分
+   ──────────────────────────────────────────────────────────────
+   既存の css/cost-modal.css の末尾に以下を追加してください。
+   （既存のクラス定義は一切変更しません）
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 買掛トグル ───────────────────────────────────────── */
+.cost-sm-unpaid-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 15px;
+  color: var(--uz-text, #E8E0CC);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cost-sm-unpaid-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--uz-gold, #D4AF37);
+  cursor: pointer;
+}
+
+/* ── 源泉徴収セクション ──────────────────────────────── */
+.cost-sm-wh-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.cost-sm-wh-label {
+  font-size: 14px;
+  color: var(--uz-text2, #A09070);
+  flex: 1;
+}
+
+.cost-sm-wh-days-input {
+  width: 60px;
+  height: 36px;
+  padding: 0 8px;
+  text-align: center;
+  font-size: 15px;
+  background: var(--uz-surface2, #252118);
+  border: 1px solid var(--uz-border, rgba(212,175,55,0.18));
+  border-radius: 6px;
+  color: var(--uz-text, #E8E0CC);
+}
+
+.cost-sm-wh-days-input:focus {
+  outline: none;
+  border-color: var(--uz-gold, #D4AF37);
+}
+
+.cost-sm-wh-unit {
+  font-size: 14px;
+  color: var(--uz-text2, #A09070);
+}
+
+.cost-sm-wh-calc-result {
+  padding: 10px 12px;
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--uz-gold, #D4AF37);
+  background: var(--uz-amber-bg, rgba(212,175,55,0.12));
+  border-radius: 6px;
+  text-align: right;
+}
+
+.cost-sm-wh-formula {
+  padding: 4px 2px 0;
+  font-size: 12px;
+  color: var(--uz-text2, #A09070);
+  text-align: right;
+}

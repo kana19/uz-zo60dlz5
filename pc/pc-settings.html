@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>設定 | ウルトラZAIMUくん PC版</title>
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="css/pc.css">
+<style>
+  /* スタッフ編集行（インライン編集・2列構成） */
+  #pc-app .staff-edit-cell { display:flex; flex-direction:column; gap:6px; }
+  #pc-app .staff-edit-line { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  #pc-app .staff-edit-line .pc-input { min-width:120px; }
+  #pc-app .pc-btn--danger { background:var(--uz-red-bg,#fdecec); color:var(--uz-red,#c0392b); border:1px solid rgba(192,57,43,0.3); }
+  #pc-app .info-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--uz-border,#e5e7eb);}
+  #pc-app .info-row:last-of-type{border-bottom:none;}
+  #pc-app .info-row__key{color:var(--uz-muted,#6b7280);font-size:13px;}
+  #pc-app .info-row__val{font-weight:700;font-size:14px;text-align:right;}
+  #pc-app .info-row__url{font-size:11px;color:var(--uz-muted,#6b7280);word-break:break-all;}
+</style>
+</head>
+<body class="pc-body">
+<div id="pc-app" class="pc-layout">
+  <main class="pc-main" id="pc-main">
+    <div class="pc-body-inner">
+
+      <!-- ① スタッフマスタ -->
+      <div class="pc-card">
+        <div class="pc-section-title">スタッフマスタ</div>
+        <table class="pc-table" id="staff-table">
+          <thead><tr>
+            <th style="width:50px;">ID</th>
+            <th>氏名</th>
+            <th style="width:160px;">雇用形態</th>
+            <th style="width:170px;">コスト科目</th>
+            <th style="width:160px;">操作</th>
+          </tr></thead>
+          <tbody id="staff-body"></tbody>
+        </table>
+        <div id="staff-add-row" class="pc-form-row" style="margin-top:10px;align-items:center;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="staff-add-name" class="pc-input" placeholder="スタッフ名" maxlength="20" style="flex:2;min-width:140px;">
+          <select id="staff-add-emp" class="pc-select" style="width:160px;">
+            <option value="employed_full">常勤雇用（社員）</option>
+            <option value="employed_temp">臨時アルバイト</option>
+            <option value="contractor">委託・外注</option>
+          </select>
+          <select id="staff-add-cost" class="pc-select" style="width:170px;" disabled>
+            <option value="21">21：外注工賃</option>
+            <option value="25">25：税理士等の報酬</option>
+          </select>
+          <input type="text" id="staff-add-password" class="pc-input" placeholder="パスワード（5桁英数字）" maxlength="5" style="width:200px;">
+          <button id="staff-add-btn" class="pc-btn" type="button">＋ 追加</button>
+        </div>
+        <p class="pc-note" style="margin-top:8px;color:var(--uz-muted);">
+          常勤雇用（社員）・臨時アルバイトは月次給与計算で「20：給料賃金」に計上されます。委託・外注はコスト科目（21：外注工賃／25：税理士等の報酬）を選択してください（ホステス・コンパニオン等は外注工賃、税理士・社労士・デザイナー等は税理士等の報酬）。<br>
+          案件単発のヘルプ・スポット外注はスタッフ登録せず、案件管理から直接コスト入力してください。
+        </p>
+      </div>
+
+      <!-- ② サービスマスタ（売上区分） -->
+      <div class="pc-card">
+        <div class="pc-section-title">サービスマスタ（売上区分） <span id="svc-count-badge" class="pc-count-badge" hidden></span></div>
+        <table class="pc-table" id="svc-table">
+          <thead><tr><th style="width:90px;">コード</th><th>サービス名</th><th style="width:90px;">税率</th><th style="width:90px;">操作</th></tr></thead>
+          <tbody id="svc-body"></tbody>
+        </table>
+        <div id="svc-add-row" class="pc-form-row" style="margin-top:10px;align-items:center;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="svc-add-name" class="pc-input" placeholder="サービス名（例：店内売上）" maxlength="30" style="flex:2;min-width:160px;">
+          <select id="svc-add-tax" class="pc-select" style="width:120px;">
+            <option value="10">10%</option>
+            <option value="8">8%（軽減）</option>
+            <option value="0">0%（非課税）</option>
+          </select>
+          <button id="svc-add-btn" class="pc-btn" type="button">＋ 追加</button>
+        </div>
+        <p id="svc-limit-hint" class="pc-note" style="margin-top:6px;color:var(--uz-muted);" hidden></p>
+      </div>
+
+      <!-- ③ 仕入原価マスタ -->
+      <div class="pc-card">
+        <div class="pc-section-title">仕入原価マスタ <span id="pur-count-badge" class="pc-count-badge" hidden></span></div>
+        <table class="pc-table" id="pur-table">
+          <thead><tr><th style="width:90px;">コード</th><th>仕入科目名</th><th style="width:90px;">税率</th><th style="width:90px;">操作</th></tr></thead>
+          <tbody id="pur-body"></tbody>
+        </table>
+        <div id="pur-add-row" class="pc-form-row" style="margin-top:10px;align-items:center;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="pur-add-name" class="pc-input" placeholder="仕入科目名（例：食材費）" maxlength="30" style="flex:2;min-width:160px;">
+          <select id="pur-add-tax" class="pc-select" style="width:120px;">
+            <option value="10">10%</option>
+            <option value="8">8%（軽減）</option>
+            <option value="0">0%（非課税）</option>
+          </select>
+          <button id="pur-add-btn" class="pc-btn" type="button">＋ 追加</button>
+        </div>
+        <p id="pur-limit-hint" class="pc-note" style="margin-top:6px;color:var(--uz-muted);" hidden></p>
+      </div>
+
+      <!-- ④ 販管費マスタ（コスト科目マスタ） -->
+      <div class="pc-card">
+        <div class="pc-section-title">販管費マスタ（コスト科目マスタ）</div>
+        <table class="pc-table" id="cm-table">
+          <thead><tr>
+            <th style="width:80px;">コード</th>
+            <th>科目名</th>
+            <th style="width:80px;">税率</th>
+            <th style="width:90px;">アプリ表示</th>
+            <th style="width:70px;">種別</th>
+          </tr></thead>
+          <tbody id="cm-body"></tbody>
+        </table>
+        <div style="margin-top:10px;"><button id="btn-save-cm" class="pc-btn">販管費マスタを保存</button></div>
+        <p class="pc-note" style="margin-top:8px;color:var(--uz-muted);">
+          コード26〜30 は青色申告決算書の任意枠です（5マス固定・拡張販売対象外）。<br>
+          固定科目（コード8〜25・31）の名称は青色申告決算書整合のため変更できません。<br>
+          「アプリ表示」のチェックを外した科目はスマホ・iPadのコスト入力に表示されません（PC版は全科目入力可）。
+        </p>
+      </div>
+
+      <!-- ⑤ 基本情報（読み取り専用） -->
+      <div class="pc-card">
+        <div class="pc-section-title">基本情報</div>
+        <div class="info-row">
+          <span class="info-row__key">店舗名</span>
+          <span id="info-store-name" class="info-row__val">—</span>
+        </div>
+        <div class="info-row" id="info-business-hours-row" hidden>
+          <span class="info-row__key">営業時間</span>
+          <span id="info-business-hours" class="info-row__val">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-row__key">プラン</span>
+          <span class="info-row__val">レオ</span>
+        </div>
+        <div class="info-row">
+          <span class="info-row__key">提供元</span>
+          <span class="info-row__val">株式会社ターゲット</span>
+        </div>
+        <div class="info-row">
+          <span class="info-row__key">バージョン</span>
+          <span id="info-version" class="info-row__val" style="cursor:pointer;user-select:none;" title="サポート用情報">1.0.0</span>
+        </div>
+
+        <!-- GAS接続情報（既定非表示・バージョンを5回タップで展開） -->
+        <div id="info-debug" hidden>
+          <div class="info-row" style="margin-top:8px;border-top:1px dashed var(--uz-border);padding-top:10px;">
+            <span class="info-row__key">GAS接続状態</span>
+            <span id="gas-status-val" class="info-row__val" style="color:var(--uz-muted);">確認中...</span>
+          </div>
+          <div class="info-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+            <span class="info-row__key">WebアプリURL</span>
+            <span id="gas-url-val" class="info-row__url" title="GAS WebアプリURL"></span>
+          </div>
+        </div>
+
+        <p class="pc-note" style="margin-top:8px;color:var(--uz-muted);">
+          店舗情報・営業時間は株式会社ターゲットが管理します。<br>
+          変更が必要な場合はサポートにご連絡ください。
+        </p>
+      </div>
+
+      <div class="settings-footer" style="text-align:center;color:var(--uz-muted);font-size:12px;padding:16px 0 24px;">
+        ウルトラZAIMUくん LEO版<br>
+        © 2026 株式会社ターゲット<br>
+        <span style="font-size:10px;">AI提案の自動確定は行いません。すべての操作はユーザーが確定してください。</span>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="../js/app.js"></script>
+<script src="js/pc-common.js"></script>
+<script src="js/pc-settings.js"></script>
+</body>
+</html>

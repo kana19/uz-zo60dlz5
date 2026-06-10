@@ -1,0 +1,1640 @@
+/* ウルトラZAIMUくん LEO版 PWA — PC専用スタイル */
+
+* { box-sizing: border-box; }
+
+body.pc-body {
+  margin: 0;
+  background: var(--uz-bg);
+  color: var(--uz-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+.pc-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── サイドバー ────────────────────────────── */
+.pc-sidebar {
+  width: 180px;
+  background: var(--uz-surface);
+  border-right: 1px solid var(--uz-border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow: hidden;
+}
+
+/* ── 店名ロゴ（クリックで損益概観 index.html へ遷移）───── */
+.pc-sidebar-logo {
+  display: block;
+  padding: 16px 14px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--uz-border);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+}
+.pc-sidebar-logo:hover { background: var(--uz-surface2); }
+.pc-sidebar-logo-text {
+  color: var(--uz-gold);
+  font-weight: 700;
+  font-size: 15px;
+  display: block;
+}
+.pc-sidebar-logo-sub {
+  color: var(--uz-text2);
+  font-size: 11px;
+  display: block;
+  margin-top: 2px;
+}
+
+.pc-nav { padding: 8px 0; }
+.pc-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  color: var(--uz-text);
+  text-decoration: none;
+  font-size: 13px;
+  border-left: 3px solid transparent;
+}
+.pc-nav__link:hover { background: var(--uz-surface2); }
+.pc-nav__link.active {
+  background: var(--uz-surface2);
+  border-left-color: var(--uz-gold);
+  color: var(--uz-gold);
+}
+.pc-nav__icon { font-size: 14px; line-height: 1; }
+
+.pc-recent {
+  flex: 1;
+  overflow-y: auto;
+  border-top: 1px solid var(--uz-border);
+  padding: 10px 12px;
+}
+.pc-recent__title {
+  font-size: 11px;
+  color: var(--uz-text2);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.pc-recent__item {
+  padding: 6px 4px;
+  border-bottom: 1px dashed var(--uz-border);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.pc-recent__row1 { display: flex; justify-content: space-between; color: var(--uz-text2); }
+.pc-recent__row2 { color: var(--uz-text); margin-top: 2px; }
+.pc-recent__tag {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10px;
+  margin-right: 4px;
+}
+.pc-recent__tag--sales { background: var(--uz-amber-bg); color: var(--uz-gold); }
+.pc-recent__tag--cost  { background: var(--uz-red-bg);   color: var(--uz-red); }
+
+/* ── メイン ────────────────────────────────── */
+.pc-main {
+  margin-left: 180px;
+  flex: 1;
+  padding: 0;
+}
+.pc-header {
+  padding: 14px 24px;
+  background: var(--uz-surface);
+  border-bottom: 1px solid var(--uz-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pc-header__title { font-size: 15px; font-weight: 600; color: var(--uz-gold); }
+.pc-header__meta  { font-size: 12px; color: var(--uz-text2); }
+
+.pc-body-inner { padding: 20px 24px 40px; }
+
+/* ── 共通UI ────────────────────────────────── */
+.pc-card {
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.pc-btn {
+  display: inline-block;
+  padding: 6px 14px;
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pc-btn:hover { background: var(--uz-gold-lt); }
+.pc-btn--ghost {
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+}
+.pc-btn--danger { background: var(--uz-red); color: var(--uz-on-accent); }
+.pc-btn--sm { padding: 3px 8px; font-size: 11px; }
+
+.pc-input, .pc-select {
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
+.pc-input:focus, .pc-select:focus { outline: 1px solid var(--uz-gold); }
+
+/* ── テーブル ──────────────────────────────── */
+.pc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.pc-table th, .pc-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--uz-border);
+  text-align: left;
+  vertical-align: middle;
+}
+.pc-table th {
+  background: var(--uz-surface2);
+  color: var(--uz-text2);
+  font-weight: 600;
+  font-size: 11px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.pc-table td.num, .pc-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.pc-table tr:hover td { background: rgba(212,175,55,0.05); }
+.pc-table tr.row--unpaid td { background: var(--uz-amber-bg); }
+.pc-table tr.row--locked td { color: var(--uz-text3); }
+
+/* ── ホームP&L ────────────────────────────── */
+.pl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.pl-table th, .pl-table td {
+  border: 1px solid var(--uz-border);
+  padding: 4px 6px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pl-table th:first-child, .pl-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  background: var(--uz-surface2);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.pl-table th { background: var(--uz-surface2); color: var(--uz-text2); }
+.pl-table td.col-current { background: var(--uz-amber-bg); color: var(--uz-gold); font-weight: 600; }
+.pl-table td.col-total   { background: var(--uz-surface2); font-weight: 700; }
+.pl-table tr.pl-row--section td { color: var(--uz-gold); cursor: pointer; background: rgba(212,175,55,0.08); }
+.pl-table tr.pl-row--section td:first-child::before { content: '▶ '; display: inline-block; transition: transform 0.15s; }
+.pl-table tr.pl-row--section.open td:first-child::before { transform: rotate(90deg); }
+.pl-table tr.pl-row--sub td:first-child { padding-left: 24px; color: var(--uz-text); font-weight: 400; background: var(--uz-surface); }
+.pl-table tr.pl-row--sum td { color: var(--uz-green); font-weight: 700; background: rgba(76,175,128,0.06); }
+.pl-table tr.pl-row--sum.neg td { color: var(--uz-red); background: rgba(224,80,80,0.06); }
+
+.pl-chart-wrap { margin-top: 20px; background: var(--uz-surface); padding: 16px; border-radius: 6px; border: 1px solid var(--uz-border); height: 320px; }
+
+/* ── タブ ──────────────────────────────────── */
+.pc-tabs { display: flex; gap: 2px; margin-bottom: 12px; border-bottom: 1px solid var(--uz-border); }
+.pc-tab {
+  padding: 8px 20px;
+  background: transparent;
+  color: var(--uz-text2);
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  border-bottom: 2px solid transparent;
+}
+.pc-tab.active { color: var(--uz-gold); border-bottom-color: var(--uz-gold); }
+
+/* ── フィルタ行 ─────────────────────────────── */
+.pc-filter-row { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+.pc-filter-row label { font-size: 12px; color: var(--uz-text2); display: flex; align-items: center; gap: 6px; }
+
+/* ── 税理士用CSV DL行 ────────────────────────── */
+.pc-tax-dl-row { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.pc-tax-dl-row .pc-select { font-size: 11px; }
+
+/* ── 履歴・修正 2ペイン ──────────────────────── */
+.pc-split { display: grid; grid-template-columns: 360px 1fr; gap: 16px; }
+.pc-list-pane { background: var(--uz-surface); border: 1px solid var(--uz-border); border-radius: 6px; max-height: calc(100vh - 180px); overflow-y: auto; }
+.pc-list-card { padding: 10px 14px; border-bottom: 1px solid var(--uz-border); cursor: pointer; }
+.pc-list-card:hover { background: var(--uz-surface2); }
+.pc-list-card.active { background: var(--uz-surface2); border-left: 3px solid var(--uz-gold); }
+.pc-list-card__r1 { display: flex; justify-content: space-between; font-size: 11px; color: var(--uz-text2); }
+.pc-list-card__r2 { margin-top: 3px; color: var(--uz-text); font-size: 13px; }
+.pc-list-card__tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; margin-right: 6px; }
+.pc-list-card__tag--sales { background: var(--uz-amber-bg); color: var(--uz-gold); }
+.pc-list-card__tag--cost  { background: var(--uz-red-bg);   color: var(--uz-red); }
+.pc-list-card__tag--attend{ background: var(--uz-info-bg);  color: var(--uz-info); }
+
+.pc-detail-pane { background: var(--uz-surface); border: 1px solid var(--uz-border); border-radius: 6px; padding: 20px; min-height: 400px; }
+.pc-detail-empty { color: var(--uz-text2); text-align: center; padding: 80px 0; }
+
+.pc-banner {
+  padding: 10px 14px;
+  background: var(--uz-amber-bg);
+  border: 1px solid var(--uz-gold-dk);
+  border-radius: 4px;
+  margin-bottom: 14px;
+  color: var(--uz-gold);
+  font-size: 12px;
+}
+.pc-banner--muted { background: var(--uz-surface2); color: var(--uz-text2); border-color: var(--uz-border); }
+
+/* ── フォーム行 ─────────────────────────────── */
+.pc-form-row { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+.pc-form-row label { min-width: 110px; font-size: 12px; color: var(--uz-text2); }
+.pc-form-row .pc-input, .pc-form-row .pc-select { flex: 1; max-width: 320px; }
+
+/* ── 設定セクション ────────────────────────── */
+.pc-section-title {
+  font-size: 13px;
+  color: var(--uz-gold);
+  margin: 20px 0 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+/* ── 汎用 ─────────────────────────────────── */
+.text-muted { color: var(--uz-text2); }
+.text-right { text-align: right; }
+.mt-8  { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.hidden { display: none !important; }
+
+/* ── 案件粗利タブ（§3-9-3）───────────────── */
+.pc-project-grossprofit { padding: 16px; }
+.pc-project-grossprofit h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--uz-gold);
+}
+.pc-note {
+  color: var(--uz-text2);
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.pc-table td.negative { color: var(--uz-red); }
+.pc-status-active    { color: var(--uz-green); }
+.pc-status-completed { color: var(--uz-text2); }
+.pc-status-canceled  { color: var(--uz-red); }
+.pc-status-unknown   { color: var(--uz-text3); }
+.pc-empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--uz-text2);
+}
+.pc-empty__hint { font-size: 11px; margin-top: 8px; line-height: 1.6; }
+.pc-loading { padding: 32px; text-align: center; color: var(--uz-text2); }
+.pc-error   { padding: 32px; text-align: center; color: var(--uz-red); }
+
+/* ── 案件粗利タブ サブビュー切替（粗利レポート/案件マスタ管理/紐付け作業）── */
+.pc-project-subview-nav {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px 0;
+  border-bottom: 1px solid var(--uz-border);
+}
+.pc-subview-btn {
+  background: transparent;
+  border: none;
+  padding: 10px 20px;
+  color: var(--uz-text2);
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.pc-subview-btn:hover { color: var(--uz-text); }
+.pc-subview-btn--active {
+  color: var(--uz-gold);
+  border-bottom-color: var(--uz-gold);
+}
+.pc-project-subview { padding: 16px; }
+
+/* ── 案件マスタ管理／紐付け作業 共通 ── */
+.pc-master-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pc-master-header h2 { margin: 0; font-size: 14px; color: var(--uz-gold); }
+.pc-master-header .pc-note { margin: 4px 0 0; font-size: 11px; }
+
+/* フィルタ行内の select（既存 .pc-filter-row と非干渉な scope に限定） */
+.pc-project-master .pc-filter-row select,
+.pc-project-link   .pc-filter-row select {
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border);
+  color: var(--uz-text);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+/* 状態フィルタボタン（active/completed/canceled/all） */
+.pc-filter-btn {
+  background: transparent;
+  border: 1px solid var(--uz-border);
+  color: var(--uz-text2);
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.pc-filter-btn:hover { color: var(--uz-text); }
+.pc-filter-btn--active {
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+  border-color: var(--uz-gold);
+}
+
+/* 一括適用バー */
+.pc-bulk-action-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--uz-amber-bg);
+  border: 1px solid var(--uz-border);
+  border-radius: 4px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.pc-bulk-count { font-size: 12px; color: var(--uz-text2); }
+.pc-project-link .pc-bulk-action-row select {
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border);
+  color: var(--uz-text);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+/* プライマリ／セカンダリ／アクションボタン */
+.pc-primary-btn {
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+.pc-primary-btn:hover { background: var(--uz-gold-lt); }
+.pc-primary-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pc-secondary-btn {
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.pc-action-btn {
+  background: transparent;
+  color: var(--uz-gold);
+  border: 1px solid var(--uz-border);
+  padding: 3px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  margin-right: 4px;
+}
+.pc-action-btn:hover { background: var(--uz-amber-bg); }
+.pc-action-btn--danger { color: var(--uz-red); }
+.pc-action-btn--danger:hover { background: var(--uz-red-bg); }
+
+/* モーダル（案件追加・編集ダイアログ） */
+.pc-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.pc-modal {
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-gold-dk, var(--uz-gold));
+  border-radius: 6px;
+  padding: 24px;
+  width: 480px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.pc-modal h3 {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--uz-gold);
+}
+/* モーダル内のフォーム行はラベル上配置（既存 .pc-form-row とは別レイアウト） */
+.pc-modal .pc-form-row {
+  display: block;
+  margin-bottom: 12px;
+}
+.pc-modal .pc-form-row label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: var(--uz-text2);
+  min-width: auto;
+}
+.pc-modal .pc-form-row input,
+.pc-modal .pc-form-row select,
+.pc-modal .pc-form-row textarea {
+  width: 100%;
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border);
+  color: var(--uz-text);
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  box-sizing: border-box;
+  max-width: none;
+}
+.pc-modal .pc-form-row input:focus,
+.pc-modal .pc-form-row select:focus,
+.pc-modal .pc-form-row textarea:focus {
+  outline: 1px solid var(--uz-gold);
+}
+.pc-required { color: var(--uz-red); }
+.pc-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* 紐付け作業：種別タグ */
+.pc-type-sales { color: var(--uz-green); font-size: 11px; }
+.pc-type-cost  { color: var(--uz-red);   font-size: 11px; }
+
+/* ── 取引一覧（transactions.html）統合UI ─────────────────── */
+.pc-tx-grossprofit-section {
+  margin-top: 24px;
+  background: rgba(212,175,55,0.06);
+  border: 1px solid rgba(212,175,55,0.18);
+  border-radius: 8px;
+}
+.pc-tx-grossprofit-section h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--uz-gold);
+}
+.pc-tx-row-link-disabled {
+  color: var(--uz-text3, rgba(255,255,255,0.4));
+  font-size: 11px;
+}
+.pc-tx-row-checkbox {
+  width: 32px;
+  text-align: center;
+}
+.pc-tx-project-master-btn { margin-left: auto; }
+
+/* ホーム画面の取引一覧誘導カード */
+.pc-dashboard-card {
+  display: block;
+  text-decoration: none;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-gold-dk, var(--uz-gold));
+  border-left: 3px solid var(--uz-gold);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  color: var(--uz-text);
+  transition: background 0.15s;
+}
+.pc-dashboard-card:hover { background: var(--uz-surface2); }
+.pc-dashboard-card h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--uz-gold);
+}
+.pc-dashboard-card p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--uz-text2);
+}
+
+/* ===== 取引一覧（取引ペア紐付けモデル）===== */
+.tx-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--uz-border);
+  margin-bottom: 16px;
+}
+.tx-section-title {
+  margin-top: 32px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--uz-text2);
+  border-bottom: 1px solid var(--uz-border);
+  padding-bottom: 4px;
+}
+.tx-hierarchy { display: flex; flex-direction: column; gap: 12px; }
+.tx-sales-node {
+  border: 1px solid var(--uz-border);
+  border-radius: 6px;
+  background: var(--uz-surface);
+  overflow: hidden;
+}
+.tx-sales-node.has-profit { border-color: var(--uz-border2); }
+.tx-parent-row {
+  display: grid;
+  grid-template-columns: 32px 110px 1fr 140px 200px 140px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--uz-surface2);
+  font-weight: 600;
+}
+.tx-children { background: var(--uz-surface); }
+.tx-child-row {
+  display: grid;
+  grid-template-columns: 32px 110px 1fr 140px 100px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 14px 6px 36px;
+  border-top: 1px solid var(--uz-border);
+  font-size: 13px;
+  color: var(--uz-text2);
+}
+.tx-tree-marker { color: var(--uz-gold); }
+.tx-amount { text-align: right; font-variant-numeric: tabular-nums; }
+.tx-profit { font-size: 13px; color: var(--uz-gold); }
+.tx-empty, .tx-empty-small { padding: 24px; text-align: center; color: var(--uz-text2); }
+.tx-unlinked { display: flex; flex-direction: column; gap: 4px; }
+.tx-unlinked-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 140px;
+  gap: 12px;
+  padding: 6px 14px;
+  border-bottom: 1px dashed var(--uz-border);
+  font-size: 13px;
+}
+
+/* 紐付け候補ポップオーバー */
+.link-popover {
+  position: absolute;
+  z-index: 100;
+  width: 480px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border2);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+.popover-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--uz-border);
+  font-weight: 600;
+  background: var(--uz-surface2);
+}
+.popover-body { padding: 6px; }
+.popover-row {
+  display: grid;
+  grid-template-columns: 24px 110px 1fr 120px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.popover-row:hover { background: var(--uz-surface2); }
+.popover-empty { padding: 24px; text-align: center; color: var(--uz-text2); }
+.popover-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 10px 14px;
+  border-top: 1px solid var(--uz-border);
+}
+
+/* ===== インライン編集（戦略思想§3-5・3デバイス統合§8-1）===== */
+.tx-toolbar-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--uz-text2);
+  letter-spacing: 0.05em;
+}
+.tx-cell {
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  min-height: 22px;
+  min-width: 40px;
+}
+.tx-cell:hover { background: var(--uz-surface2); }
+.tx-cell.is-editing {
+  padding: 0;
+  background: var(--uz-bg);
+  outline: 2px solid var(--uz-gold);
+}
+.tx-cell input,
+.tx-cell select {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--uz-text);
+  padding: 4px 6px;
+  font: inherit;
+  box-sizing: border-box;
+}
+.tx-cell input:focus,
+.tx-cell select:focus { outline: none; }
+.tx-row-new {
+  background: rgba(212, 175, 55, 0.08);
+  border-left: 3px solid var(--uz-gold);
+}
+/* ===== 新規ドラフト行の行末ボタン（明示確定UI・戦略思想§1-4） ===== */
+.tx-row-actions {
+  display: inline-flex;
+  gap: 8px;
+  margin-left: auto;
+  padding-left: 12px;
+}
+.btn-draft-submit {
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  border: none;
+  padding: 4px 14px;
+  border-radius: 3px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-draft-submit:disabled {
+  background: var(--uz-border);
+  color: var(--uz-text2);
+  cursor: not-allowed;
+}
+.btn-draft-cancel {
+  background: transparent;
+  color: var(--uz-text2);
+  border: 1px solid var(--uz-border);
+  padding: 4px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.btn-draft-cancel:hover {
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+}
+.tx-row-locked {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.tx-row-unpaid { background: var(--uz-amber-bg); }
+
+.pc-placeholder {
+  padding: 40px;
+  text-align: center;
+  color: var(--uz-text2);
+  font-size: 16px;
+  border: 1px dashed var(--uz-border);
+  border-radius: 8px;
+  margin: 20px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   月次管理画面（pc/monthly.html）
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── フィルタバー ───────────────────────────────────────── */
+.pc-filter-bar {
+  display: flex;
+  gap: 16px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.pc-filter-bar label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--uz-text2);
+}
+.pc-filter-bar select {
+  background: var(--uz-surface);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.pc-filter-bar select:focus {
+  outline: 1px solid var(--uz-gold);
+}
+
+/* ── フラットテーブル ──────────────────────────────────── */
+.pc-table-wrap {
+  border: 1px solid var(--uz-border);
+  border-radius: 6px;
+  background: var(--uz-surface);
+}
+.pc-monthly-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.pc-monthly-table th,
+.pc-monthly-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--uz-border);
+  text-align: left;
+  vertical-align: middle;
+}
+.pc-monthly-table th.num,
+.pc-monthly-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pc-monthly-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.pc-monthly-table thead th {
+  background: var(--uz-surface2);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-gold);
+  letter-spacing: 0.04em;
+}
+.pc-monthly-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.pc-monthly-table tbody tr:hover {
+  background: rgba(212, 175, 55, 0.04);
+}
+.pc-monthly-table tbody tr[data-selected="true"] {
+  background: var(--uz-amber-bg);
+  outline: 2px solid var(--uz-gold);
+  outline-offset: -2px;
+}
+.pc-monthly-table tbody tr[data-selected="true"]:hover {
+  background: var(--uz-amber-bg);
+}
+.pc-monthly-table tbody tr:focus {
+  outline: none;
+}
+
+/* ── 行スタイル（バッジ・状態） ───────────────────────── */
+.pc-row--project-marker {
+  margin-left: 4px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+.pc-row--unpaid {
+  background: var(--uz-amber-bg);
+}
+.pc-row--unpaid:hover {
+  background: rgba(212, 175, 55, 0.18);
+}
+.pc-row--locked {
+  background: rgba(160, 144, 112, 0.10);
+  color: var(--uz-text3);
+}
+.pc-row--draft {
+  background: rgba(212, 175, 55, 0.08);
+  border-left: 3px solid var(--uz-gold);
+}
+.pc-row--editing td {
+  background: var(--uz-amber-bg);
+  outline: 1px solid var(--uz-gold);
+  outline-offset: -1px;
+}
+.pc-monthly-table tbody tr:not(.pc-row--locked):not(.pc-row--draft):not(.pc-row--editing) td[data-field-cell] {
+  cursor: pointer;
+}
+
+/* ── 編集インライン入力 ─ */
+.pc-edit-input {
+  width: 100%;
+  background: var(--uz-bg);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+  border-radius: 3px;
+  padding: 4px 6px;
+  font-size: 13px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.pc-edit-input--num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pc-edit-input:focus {
+  outline: 1px solid var(--uz-gold);
+  border-color: var(--uz-gold);
+}
+
+/* ── 操作列・ボタン ───────────────────────────────────── */
+.pc-row--actions {
+  white-space: nowrap;
+  text-align: right;
+}
+.pc-row--actions .pc-action-btn {
+  margin-right: 4px;
+}
+.pc-row--actions .pc-action-btn:last-child {
+  margin-right: 0;
+}
+.pc-action-btn--project {
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  border-color: var(--uz-gold);
+}
+.pc-action-btn--project:hover {
+  filter: brightness(1.1);
+  background: var(--uz-gold);
+}
+.pc-action-btn--reconcile {
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+  border-color: var(--uz-gold);
+}
+.pc-action-btn--reconcile:hover {
+  background: rgba(212, 175, 55, 0.22);
+}
+.pc-action-btn--save {
+  background: var(--uz-green-bg);
+  color: var(--uz-green);
+  border-color: rgba(76, 175, 128, 0.4);
+}
+.pc-action-btn--save:hover {
+  background: rgba(76, 175, 128, 0.22);
+}
+.btn-star {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--uz-text2);
+  padding: 2px 4px;
+  transition: color 0.15s;
+}
+.btn-star:hover { color: var(--uz-gold); }
+.btn-star--active { color: var(--uz-gold); }
+
+.btn-col-filter {
+  background: none;
+  border: none;
+  font-size: 10px;
+  cursor: pointer;
+  color: var(--uz-text2);
+  padding: 0 2px;
+  vertical-align: middle;
+}
+.btn-col-filter--active {
+  color: var(--uz-gold);
+  font-weight: bold;
+}
+
+/* 列見出しフィルタドロップダウン */
+.col-filter-dropdown {
+  position: absolute;
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border2);
+  border-radius: 6px;
+  padding: 8px;
+  z-index: 100;
+  min-width: 160px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.col-filter-dropdown label {
+  display: block;
+  padding: 3px 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+.col-filter-dropdown hr { border: 0; border-top: 1px solid var(--uz-border); margin: 6px 0; }
+.col-filter-dropdown .col-filter-list { max-height: 240px; overflow-y: auto; }
+.col-filter-dropdown .col-filter-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--uz-border);
+}
+.col-filter-dropdown .col-filter-actions button {
+  background: var(--uz-surface);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+  border-radius: 3px;
+  padding: 3px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.col-filter-dropdown .col-filter-actions button[data-cf-action="apply"] {
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  border-color: var(--uz-gold);
+}
+.col-filter-empty { color: var(--uz-text3); font-size: 12px; padding: 8px 0; }
+
+.pc-monthly-table thead tr.monthly-summary-row td {
+  background: var(--uz-amber-bg);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uz-gold);
+  border-bottom: 1px solid var(--uz-border);
+}
+.monthly-summary-cell { white-space: nowrap; }
+
+#monthly-table input[type="number"]::-webkit-inner-spin-button,
+#monthly-table input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+#monthly-table input[type="number"] { -moz-appearance: textfield; }
+
+/* ── 行追加ボタン＋ページャ ───────────────────────────── */
+.pc-add-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+.pc-add-buttons > button {
+  padding: 8px 16px;
+  background: var(--uz-surface);
+  color: var(--uz-gold);
+  border: 1px solid var(--uz-gold);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+.pc-add-buttons > button:hover {
+  background: var(--uz-amber-bg);
+}
+
+.pc-pagination {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--uz-text2);
+}
+.pc-pagination button {
+  padding: 4px 10px;
+  background: var(--uz-surface);
+  color: var(--uz-gold);
+  border: 1px solid var(--uz-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+}
+.pc-pagination button:hover {
+  background: var(--uz-amber-bg);
+  border-color: var(--uz-gold);
+}
+.pc-pagination #page-info {
+  white-space: nowrap;
+}
+
+/* ── ローディング・補助 ─────────────────────────────────── */
+.pc-monthly-table .loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--uz-text2);
+}
+.pc-text-muted {
+  color: var(--uz-text3);
+  font-size: 11px;
+}
+
+/* ── 案件マーカー ── */
+.pc-project-cell {
+  text-align: center;
+  font-size: 14px;
+}
+.pc-project-cell.is-project {
+  color: var(--uz-gold);
+}
+
+.pc-project-col {
+  white-space: nowrap;
+  text-align: center;
+}
+.pc-project-col .pc-action-btn { margin-right: 4px; }
+.pc-project-col .pc-action-btn:last-child { margin-right: 0; }
+
+/* ═══════════════════════════════════════════════════════════
+   紐付け候補モーダル
+   ═══════════════════════════════════════════════════════════ */
+.pc-link-candidates-modal[hidden] { display: none; }
+.pc-link-candidates-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pc-link-candidates-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 24, 66, 0.6);
+}
+.pc-link-candidates-panel {
+  position: relative;
+  width: min(640px, 92vw);
+  max-height: min(80vh, 600px);
+  display: flex;
+  flex-direction: column;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+.pc-link-candidates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--uz-surface2);
+  border-bottom: 1px solid var(--uz-border);
+}
+.pc-link-candidates-header h2 {
+  margin: 0;
+  font-size: 14px;
+  color: var(--uz-gold);
+  font-weight: 700;
+}
+.pc-link-candidates-close {
+  background: transparent;
+  border: none;
+  color: var(--uz-text2);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.pc-link-candidates-close:hover {
+  color: var(--uz-text);
+}
+.pc-link-candidates-target[hidden] { display: none; }
+.pc-link-candidates-target {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  border-bottom: 1px solid var(--uz-border);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.pc-link-candidates-target__label {
+  color: var(--uz-gold);
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+.pc-link-candidates-target__date,
+.pc-link-candidates-target__type,
+.pc-link-candidates-target__subject {
+  flex: 0 0 auto;
+}
+.pc-link-candidates-target__sep {
+  color: var(--uz-text3);
+  flex: 0 0 auto;
+}
+.pc-link-candidates-target__amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+.pc-link-candidates-target__memo {
+  color: var(--uz-text2);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pc-link-candidates-hint {
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--uz-text2);
+  border-bottom: 1px solid var(--uz-border);
+  background: var(--uz-surface);
+}
+.pc-link-candidates-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.pc-link-candidates-row {
+  display: grid;
+  grid-template-columns: 24px 90px 1fr 110px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--uz-border);
+  font-size: 13px;
+  cursor: pointer;
+}
+.pc-link-candidates-row:hover {
+  background: var(--uz-surface2);
+}
+.pc-link-candidates-row.is-current-link {
+  background: var(--uz-amber-bg);
+}
+.pc-link-candidates-row__amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pc-link-candidates-row__memo {
+  color: var(--uz-text2);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pc-link-candidates-row__project-flag {
+  margin-left: 4px;
+  font-size: 11px;
+}
+.pc-link-candidates-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--uz-text2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.pc-link-candidates-error {
+  padding: 8px 16px;
+  margin: 0;
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+  font-size: 12px;
+  border-top: 1px solid rgba(224,80,80,0.3);
+}
+.pc-link-candidates-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  border-top: 1px solid var(--uz-border);
+  background: var(--uz-surface2);
+}
+.pc-btn {
+  padding: 6px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--uz-border);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pc-btn-secondary {
+  background: var(--uz-surface);
+  color: var(--uz-text2);
+}
+.pc-btn-secondary:hover {
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+}
+.pc-btn-primary {
+  background: var(--uz-green-bg);
+  color: var(--uz-green);
+  border-color: rgba(76, 175, 128, 0.45);
+}
+.pc-btn-primary:hover {
+  background: rgba(76, 175, 128, 0.22);
+}
+
+/* ── ロック行 ─── */
+.pc-row--locked {
+  background: rgba(160, 144, 112, 0.10);
+  color: var(--uz-text3);
+}
+.pc-row--locked td {
+  cursor: not-allowed;
+}
+.pc-action-btn--unlock {
+  background: var(--uz-surface2);
+  color: var(--uz-text2);
+  border-color: var(--uz-border);
+}
+.pc-action-btn--unlock:hover {
+  background: rgba(160, 144, 112, 0.15);
+  color: var(--uz-text);
+}
+
+/* ── ドラフトコスト行の区分タブ ── */
+.pc-division-tabs {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: 4px;
+  padding: 1px;
+}
+.pc-division-tab {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 600;
+  background: transparent;
+  color: var(--uz-text2);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pc-division-tab:hover {
+  background: var(--uz-amber-bg);
+  color: var(--uz-text);
+}
+.pc-division-tab.is-active {
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  border-color: var(--uz-gold);
+}
+.pc-division-tab.is-active:hover {
+  background: var(--uz-gold);
+  filter: brightness(1.05);
+}
+
+.pc-action-btn[disabled],
+.pc-action-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pc-edit-input[disabled],
+.pc-edit-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--uz-surface);
+}
+
+/* ══════════════════════════════════════════════════════════
+   案件管理画面（pc-projects.js）用スタイル
+   ══════════════════════════════════════════════════════════ */
+
+/* ── ツールバー ──────────────────────────────────────────── */
+.pc-projects-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.pc-projects-month-label {
+  font-size: 13px;
+  color: var(--uz-text2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pc-projects-summary {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--uz-text2);
+  flex: 1;
+}
+.pc-projects-summary strong {
+  color: var(--uz-text);
+}
+.pc-projects-summary .neg {
+  color: var(--uz-red);
+}
+
+/* ── 案件カードリスト ────────────────────────────────────── */
+.pc-projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pc-projects-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--uz-text2);
+  font-size: 14px;
+}
+
+/* ── 案件カード ──────────────────────────────────────────── */
+.pj-card {
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pj-card__body {
+  display: flex;
+  align-items: stretch;
+  min-height: 80px;
+}
+.pj-card__sales {
+  flex: 0 0 260px;
+  padding: 12px 16px;
+}
+.pj-card__divider {
+  width: 2px;
+  background: var(--uz-border2);
+  flex-shrink: 0;
+}
+.pj-card__costs {
+  flex: 1;
+  padding: 12px 16px;
+  min-width: 0;
+}
+.pj-card__costs-empty {
+  font-size: 12px;
+  color: var(--uz-text2);
+  padding: 4px 0;
+}
+.pj-card__profit {
+  flex: 0 0 120px;
+  padding: 12px 16px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.pj-card__profit-value {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--uz-green);
+}
+.pj-card__profit-value.neg {
+  color: var(--uz-red);
+}
+.pj-card__profit-rate {
+  font-size: 12px;
+  color: var(--uz-text2);
+  margin-top: 2px;
+}
+.pj-card__section-label {
+  font-size: 11px;
+  color: var(--uz-text2);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.pj-card__row {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--uz-text);
+  padding: 2px 0;
+  align-items: baseline;
+}
+.pj-card__date {
+  flex: 0 0 85px;
+  color: var(--uz-text2);
+  font-size: 12px;
+}
+.pj-card__type {
+  flex: 0 0 65px;
+  font-size: 12px;
+  color: var(--uz-text2);
+}
+.pj-card__subject {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pj-card__amount {
+  flex: 0 0 90px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pj-card__memo {
+  font-size: 12px;
+  color: var(--uz-text2);
+  margin-top: 2px;
+}
+.pj-card__memo-inline {
+  font-size: 11px;
+  color: var(--uz-text2);
+  flex: 0 0 auto;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pj-card__actions {
+  display: flex;
+  gap: 8px;
+  padding: 6px 16px 10px;
+  border-top: 1px solid var(--uz-border);
+}
+.pj-action {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+.pj-action--warn {
+  color: var(--uz-red);
+  border-color: var(--uz-red);
+}
+.pj-action--warn:hover {
+  background: var(--uz-red-bg);
+}
+
+/* ── 新規案件ドラフトカード ──────────────────────────────── */
+.pj-card--draft {
+  border-color: var(--uz-gold);
+  background: var(--uz-surface2);
+}
+.pj-draft-form {
+  padding: 14px 16px;
+}
+.pj-draft-fields {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.pj-draft-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--uz-text2);
+}
+.pj-draft-field input,
+.pj-draft-field select {
+  min-width: 110px;
+}
+.pj-draft-field input[type="number"] {
+  width: 120px;
+}
+.pj-draft-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pj-draft-spacer {
+  flex: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   削除確認モーダル
+   ═══════════════════════════════════════════════════════════ */
+.pc-delete-confirm-body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pc-delete-target-info {
+  padding: 10px 14px;
+  background: var(--uz-amber-bg);
+  border-left: 3px solid var(--uz-gold);
+  color: var(--uz-text);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.pc-delete-target-info__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-gold);
+  margin-bottom: 4px;
+}
+.pc-delete-target-info__main {
+  font-weight: 600;
+}
+.pc-delete-target-info__memo {
+  margin-top: 4px;
+  color: var(--uz-text2);
+  font-size: 12px;
+}
+.pc-delete-warning {
+  padding: 10px 14px;
+  background: var(--uz-red-bg);
+  border-left: 3px solid var(--uz-red);
+  color: var(--uz-text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.pc-btn-danger {
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+  border-color: var(--uz-red);
+}
+.pc-btn-danger:hover {
+  background: var(--uz-red);
+  color: var(--uz-on-accent);
+}
+.pc-action-btn--delete {
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+  border: 1px solid var(--uz-red);
+}
+.pc-action-btn--delete:hover {
+  background: var(--uz-red);
+  color: var(--uz-on-accent);
+}
+.pj-action--delete {
+  border-color: var(--uz-red) !important;
+  color: var(--uz-red) !important;
+}
+.pj-action--delete:hover {
+  background: var(--uz-red) !important;
+  color: var(--uz-on-accent) !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.pc-delete-checkboxes {
+  margin: 12px 0;
+  padding: 8px 12px;
+  background: var(--uz-amber-bg);
+  border-left: 3px solid var(--uz-gold);
+}
+.pc-delete-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  cursor: pointer;
+  line-height: 1.6;
+}
+.pc-delete-checkbox-row--locked {
+  cursor: default;
+  opacity: 0.85;
+}
+.pc-delete-checkbox-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--uz-red);
+}
+.pc-delete-checkbox-row--locked input[type="checkbox"] {
+  cursor: default;
+}
+.pc-delete-checkbox-row span {
+  flex: 1;
+  color: var(--uz-text);
+  font-size: 13px;
+}
+.pc-delete-warning > div {
+  margin: 2px 0;
+  line-height: 1.6;
+}

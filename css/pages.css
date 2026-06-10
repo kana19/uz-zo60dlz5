@@ -1,0 +1,1077 @@
+/* ============================================================
+   ウルトラZAIMUくん LEO版 PWA — pages.css
+   clockin / uncollected / settings / history 各ページ専用スタイル
+   カラーコードの直書き禁止。変数経由のみ。
+   ============================================================ */
+
+/* ══════════════════════════════════════════════════════════
+   入店記録画面(clockin.html)
+   ══════════════════════════════════════════════════════════ */
+
+/* クイック選択ボタングループ */
+.quick-staff-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-staff-btn {
+  height: 42px;
+  padding: 0 18px;
+  border: 2px solid var(--uz-border);
+  border-radius: 21px;
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.quick-staff-btn:active { filter: brightness(0.85); }
+
+.quick-staff-btn--selected {
+  border-color: var(--uz-gold);
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+}
+
+/* 選択中スタッフ表示 */
+.selected-name-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--uz-amber-bg);
+  border: 1px solid var(--uz-border2);
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--uz-gold);
+}
+
+/* 勤怠リスト(フル) */
+.attendance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.attendance-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--uz-surface);
+  border-radius: var(--radius-md);
+}
+
+.attendance-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.attendance-dot--active {
+  background: var(--uz-green);
+  box-shadow: 0 0 6px var(--uz-green);
+}
+
+.attendance-dot--out {
+  background: var(--uz-muted);
+}
+
+.attendance-info { flex: 1; min-width: 0; }
+
+.attendance-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--uz-text);
+}
+
+.attendance-time {
+  font-size: 12px;
+  color: var(--uz-muted);
+  margin-top: 2px;
+}
+
+.attendance-clockout-btn {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--uz-red);
+  border-radius: var(--radius-sm);
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.attendance-clockout-btn:active { background: rgba(224,80,80,0.2); }
+
+/* 入店履歴 — 日またぎ・異常値の時刻表示 */
+.attend-time-overnight {
+  color: var(--uz-gold);
+  font-weight: 700;
+}
+
+.attend-time-abnormal {
+  color: var(--uz-red);
+  font-weight: 700;
+}
+
+/* 入店ボタン(画面下固定) */
+.clockin-submit-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: var(--uz-bg);
+  border-top: 1px solid var(--uz-border);
+  z-index: 200;
+}
+
+.clockin-btn {
+  width: 100%;
+  height: var(--btn-height);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  font-family: var(--font-main);
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.clockin-btn:active { filter: brightness(0.85); transform: scale(0.98); }
+
+.clockin-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ══════════════════════════════════════════════════════════
+   未収・買掛け画面(uncollected.html)
+   ══════════════════════════════════════════════════════════ */
+
+/* サマリーカード(上部) */
+.uc-summary {
+  display: flex;
+  gap: 8px;
+  padding: 16px 16px 0;
+}
+
+.uc-summary-card {
+  flex: 1;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.uc-summary-card__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.uc-summary-card__value {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.uc-summary-card--uncollected .uc-summary-card__value { color: var(--uz-gold); }
+.uc-summary-card--payable     .uc-summary-card__value { color: var(--uz-red);  }
+
+/* セクションヘッダー */
+.uc-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 16px 8px;
+}
+
+.uc-section-header__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  letter-spacing: 0.06em;
+}
+
+.uc-section-header__badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.uc-badge--uncollected {
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+  border: 0.5px solid var(--uz-border2);
+}
+
+.uc-badge--payable {
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+  border: 0.5px solid rgba(224,80,80,0.3);
+}
+
+/* アイテムカード */
+.uc-item {
+  background: var(--uz-surface);
+  border-radius: var(--radius-md);
+  margin: 0 16px 8px;
+  overflow: hidden;
+}
+
+.uc-item-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.uc-item-info { flex: 1; min-width: 0; }
+
+.uc-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--uz-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.uc-item-meta {
+  font-size: 12px;
+  color: var(--uz-muted);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.uc-item-right { text-align: right; flex-shrink: 0; }
+
+.uc-item-amount {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  display: block;
+}
+
+.uc-item-amount--uncollected { color: var(--uz-gold); }
+.uc-item-amount--payable     { color: var(--uz-red);  }
+
+/* 消込ボタン */
+.uc-reconcile-btn {
+  margin-top: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 15px;
+  border: 1px solid;
+  background: transparent;
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.uc-reconcile-btn--uncollected {
+  border-color: var(--uz-border2);
+  color: var(--uz-gold);
+}
+
+.uc-reconcile-btn--uncollected:active,
+.uc-reconcile-btn--uncollected.active {
+  background: var(--uz-amber-bg);
+}
+
+.uc-reconcile-btn--payable {
+  border-color: var(--uz-red);
+  color: var(--uz-red);
+}
+
+.uc-reconcile-btn--payable:active,
+.uc-reconcile-btn--payable.active {
+  background: var(--uz-red-bg);
+}
+
+/* 消込インラインフォーム */
+.uc-reconcile-form {
+  border-top: 1px solid var(--uz-border);
+  padding: 14px 16px;
+  background: var(--uz-surface2);
+  display: none;
+}
+
+.uc-reconcile-form--open { display: block; }
+
+.uc-reconcile-form__row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.uc-reconcile-form__field { flex: 1; }
+
+.uc-reconcile-form__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.uc-reconcile-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: var(--radius-sm);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.uc-reconcile-input:focus { outline: none; border-color: var(--uz-gold); }
+
+.uc-reconcile-confirm-btn {
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-main);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.uc-reconcile-confirm-btn--uncollected {
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+}
+
+.uc-reconcile-confirm-btn--payable {
+  background: var(--uz-red);
+  color: var(--uz-on-accent);
+}
+
+.uc-reconcile-confirm-btn:active { filter: brightness(0.85); }
+.uc-reconcile-confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* データなしメッセージ */
+.uc-empty {
+  text-align: center;
+  padding: 32px 24px;
+  color: var(--uz-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ══════════════════════════════════════════════════════════
+   設定画面(settings.html)
+   ══════════════════════════════════════════════════════════ */
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  background: var(--uz-surface);
+  border-bottom: 1px solid var(--uz-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.settings-header__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--uz-text);
+}
+
+/* 設定セクション */
+.settings-section {
+  margin: 16px 16px 0;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.settings-section__title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  letter-spacing: 0.08em;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+/* 設定行 */
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.settings-row:last-child { border-bottom: none; }
+
+.settings-row__label {
+  flex: 1;
+  font-size: 15px;
+  color: var(--uz-text);
+}
+
+.settings-row__sub {
+  font-size: 12px;
+  color: var(--uz-muted);
+  margin-top: 2px;
+}
+
+/* 設定インプット */
+.settings-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-sm);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 15px;
+  transition: border-color 0.15s;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: var(--uz-gold);
+}
+
+.settings-save-btn {
+  height: 38px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: filter 0.15s;
+}
+
+.settings-save-btn:active { filter: brightness(0.85); }
+
+/* スタッフ行 */
+.staff-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.staff-row:last-of-type { border-bottom: none; }
+
+.staff-row__name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--uz-text);
+}
+
+.staff-delete-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--uz-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--uz-muted);
+  font-family: var(--font-main);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.staff-delete-btn:active {
+  border-color: var(--uz-red);
+  color: var(--uz-red);
+}
+
+/* スタッフ：雇用形態バッジ */
+.staff-emp-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.staff-emp-badge--employed {
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+  border: 1px solid var(--uz-border2);
+}
+
+.staff-emp-badge--contractor {
+  background: var(--uz-info-bg);
+  color: var(--uz-info);
+  border: 1px solid rgba(106,159,212,0.35);
+}
+
+/* スタッフ：編集ボタン */
+.staff-edit-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--uz-gold);
+  font-family: var(--font-main);
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.staff-edit-btn:active {
+  border-color: var(--uz-gold);
+  background: var(--uz-amber-bg);
+}
+
+/* スタッフ：インライン編集 保存ボタン */
+.staff-save-btn {
+  height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: filter 0.15s;
+}
+
+.staff-save-btn:active { filter: brightness(0.85); }
+
+/* スタッフ：インライン編集 キャンセルボタン */
+.staff-cancel-btn {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--uz-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--uz-muted);
+  font-family: var(--font-main);
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+
+.staff-cancel-btn:active { border-color: var(--uz-muted); }
+
+/* サービスマスタ：税率バッジ */
+.service-tax-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border);
+  border-radius: 10px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* スタッフ追加フォーム */
+.staff-add-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--uz-border);
+}
+
+.staff-add-input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-sm);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 14px;
+}
+
+.staff-add-input::placeholder { color: var(--uz-text3); }
+
+.staff-add-input:focus {
+  outline: none;
+  border-color: var(--uz-gold);
+}
+
+.staff-add-btn {
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--uz-gold);
+  color: var(--uz-bg);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.staff-add-btn:active { filter: brightness(0.85); }
+
+/* アプリ情報行 */
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.info-row:last-child { border-bottom: none; }
+
+.info-row__key {
+  font-size: 14px;
+  color: var(--uz-muted);
+}
+
+.info-row__val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--uz-text);
+}
+
+/* GAS URL行(横スクロール) */
+.info-row__url {
+  font-size: 10px;
+  color: var(--uz-muted);
+  font-family: monospace;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-footer {
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--uz-muted);
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════════════════════
+   入力履歴画面(history.html)
+   ══════════════════════════════════════════════════════════ */
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  background: var(--uz-surface);
+  border-bottom: 1px solid var(--uz-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.history-header__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--uz-text);
+}
+
+/* 履歴アイテム */
+/* ══════════════════════════════════════════════════════════
+   履歴・修正画面
+   ══════════════════════════════════════════════════════════ */
+
+/* ── 月ナビゲーター ──────────────────────────────────────── */
+.hist-month-nav {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px 8px;
+  gap: 8px;
+}
+
+.hist-month-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  background: var(--uz-surface);
+  color: var(--uz-text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.hist-month-btn:active { background: var(--uz-surface2); }
+.hist-month-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.hist-month-btn .ti { font-size: 16px; }
+
+.hist-month-label {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--uz-text);
+}
+
+/* ── フィルターバー ──────────────────────────────────────── */
+/* 勤怠タブ 二段目：スタッフ別絞り込み＋新規登録を並列。
+   高さは取引タブの .hist-filter-bar（ピル30px）と統一する。 */
+.hist-attend-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 14px 8px;
+}
+.hist-attend-bar .hist-attend-filter__select {
+  flex: 1 1 30%;
+  min-width: 92px;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-family: var(--font-main);
+  color: var(--uz-text);
+  background: var(--uz-bg);
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.hist-attend-bar .ci-open-btn {
+  flex: 0 0 auto;
+  width: auto;
+  height: 30px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 取引タブ 売上/コスト追加（ホーム倣い・モノトーン／00§5-9） */
+.hist-sc-add {
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px;
+}
+.hist-sc-add__btn {
+  flex: 1;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--uz-border2);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--uz-text);
+  cursor: pointer;
+}
+.hist-sc-add__btn--sales { background: var(--uz-bg); }
+.hist-sc-add__btn--cost  { background: var(--uz-surface2); }
+.hist-sc-add__btn:active { filter: brightness(0.97); }
+
+.hist-filter-bar {
+  display: flex;
+  align-items: center;
+  padding: 0 14px 8px;
+  gap: 8px;
+}
+
+.hist-filter-btn {
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid var(--uz-border2);
+  border-radius: 15px;
+  background: var(--uz-surface);
+  color: var(--uz-text2);
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hist-filter-btn--active {
+  background: var(--uz-gold);
+  color: var(--uz-on-accent);
+  border-color: var(--uz-gold);
+}
+
+.hist-filter-total {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--uz-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 履歴リスト（行型） ──────────────────────────────────── */
+.hist-list {
+  border-top: 1px solid var(--uz-border);
+}
+
+/* ── 区分バッジ（売上／仕入／販管費・枠サイズ統一・モノトーン／00§5-9 §2-2） ──
+   売上=白地黒枠黒字／仕入=薄グレー地黒枠黒字／販管費=黒地白字黒枠。 */
+.uz-div-badge {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 3.6em;
+  text-align: center;
+  padding: 2px 0;
+  border-radius: 4px;
+  border: 1px solid var(--uz-text);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.uz-div-badge--sales    { background: var(--uz-bg);       color: var(--uz-text); }
+.uz-div-badge--purchase { background: var(--uz-surface2); color: var(--uz-text); }
+.uz-div-badge--sga      { background: var(--uz-text);     color: var(--uz-bg);   }
+/* スマホ取引行内のバッジ：名称との間隔 */
+.hist-row > .uz-div-badge { margin-right: 8px; }
+
+.hist-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--uz-border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.hist-row--sales { background: var(--uz-bg); }
+.hist-row--cost  { background: var(--uz-surface); }
+.hist-row:active { filter: brightness(0.96); }
+
+.hist-row__name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--uz-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  padding-right: 8px;
+}
+
+.hist-row__memo {
+  font-size: 11px;
+  color: var(--uz-text3);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hist-row__amount {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--uz-text);
+  flex-shrink: 0;
+  min-width: 80px;
+  text-align: right;
+}
+
+.hist-row__edit {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.hist-edit-btn {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--uz-border2);
+  border-radius: 6px;
+  background: var(--uz-surface2);
+  color: var(--uz-text2);
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.hist-edit-btn--grace {
+  border-color: var(--uz-danger);
+  color: var(--uz-danger);
+}
+
+.hist-row__timer {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* カラータイマーは base.css の .uz-timer-dot に統合（SSOT・§5-4） */
+
+.hist-date-header {
+  padding: 8px 14px 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uz-text3);
+  background: var(--uz-bg);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   承認バナー(history.html)
+   ══════════════════════════════════════════════════════════ */
+
+.approval-banner {
+  background: var(--uz-amber-bg);
+  border: 0.5px solid rgba(212,175,55,0.35);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 8px 16px;
+}
+
+.approval-banner__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--uz-gold);
+  margin-bottom: 4px;
+}
+
+.approval-banner__detail {
+  font-size: 11px;
+  color: var(--uz-text2);
+  margin-bottom: 10px;
+}
+
+.approval-banner__btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-reject {
+  height: 40px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--uz-red-bg);
+  border: 0.5px solid rgba(224,80,80,0.3);
+  color: var(--uz-red);
+  cursor: pointer;
+  font-family: var(--font-main);
+}
+
+.btn-approve {
+  height: 40px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--uz-green-bg);
+  border: 0.5px solid rgba(76,175,128,0.3);
+  color: var(--uz-green);
+  cursor: pointer;
+  font-family: var(--font-main);
+}
+
+/* ══════════════════════════════════════════════════════════
+   税理士用CSV DL(pl.html)
+   ══════════════════════════════════════════════════════════ */
+
+/* 期間選択+DLボタン行 */
+.tax-dl-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  flex-wrap: wrap;
+}
+
+.tax-dl-select {
+  height: 36px;
+  border-radius: 7px;
+  font-size: 12px;
+  padding: 0 8px;
+  background: var(--uz-surface);
+  border: 0.5px solid var(--uz-border);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  flex: 1;
+  min-width: 0;
+}
+
+.tax-dl-sep {
+  font-size: 13px;
+  color: var(--uz-muted);
+  flex-shrink: 0;
+}
+
+.btn-tax-dl {
+  height: 36px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--uz-green-bg);
+  border: 0.5px solid rgba(76,175,128,0.3);
+  color: var(--uz-green);
+  font-family: var(--font-main);
+  padding: 0 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-tax-dl:active { filter: brightness(0.85); }

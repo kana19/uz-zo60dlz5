@@ -1,0 +1,14 @@
+{
+  "name": "タイムカード",
+  "short_name": "タイムカード",
+  "description": "ウルトラZAIMUくん スタッフ出退勤",
+  "start_url": "./staff-clockin.html",
+  "display": "standalone",
+  "background_color": "#0B1842",
+  "theme_color": "#0B1842",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

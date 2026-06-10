@@ -1,0 +1,236 @@
+/* ============================================================
+   ウルトラZAIMUくん LEO版 PWA — pl.css
+   損益サマリー画面専用スタイル
+   シルバー系濃淡のみ。カラーコード直書き禁止。
+
+   ⚠️ pl-row系・pl-accordion系・pl-detail-row系の本体定義は
+      css/base.css に集約されている(395行以降・539行以降)。
+      このファイルでは損益画面固有の補助スタイルのみを扱う。
+
+   A-9：旧pl-row-wrap・pl-main-row・pl-expand-icon・pl-breakdown系の
+        死コードを削除。前年比diffをpl-value-diffに統一。
+   ============================================================ */
+
+/* ── 損益ページヘッダー ──────────────────────────────────── */
+.pl-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  background: var(--uz-bg);
+  border-bottom: none;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.pl-header__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--uz-text);
+}
+
+/* ── タブバー ────────────────────────────────────────────── */
+.pl-tab-bar {
+  display: flex;
+  background: var(--uz-bg);
+  border-bottom: 1px solid var(--uz-border);
+  position: sticky;
+  top: 44px;
+  z-index: 99;
+}
+.pl-tab {
+  flex: 1;
+  height: 40px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--uz-text3);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  margin-bottom: -1px;
+}
+.pl-tab--active {
+  color: var(--uz-text);
+  border-bottom-color: var(--uz-text);
+}
+
+/* ── 期間ナビ＋比較ボタン（同一行） ─────────────────────── */
+.pl-period-nav {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px 6px;
+  gap: 8px;
+}
+.pl-period-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  background: var(--uz-surface);
+  color: var(--uz-text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.pl-period-btn:active { background: var(--uz-surface2); }
+.pl-period-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.pl-period-label {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--uz-text);
+}
+
+/* 前年同月比ボタン：期間ナビと同行右端 */
+.pl-compare-wrap { display: contents; }
+.pl-compare-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  background: var(--uz-surface);
+  color: var(--uz-text2);
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.pl-compare-btn--active {
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  border-color: var(--uz-border2);
+}
+
+/* ── 税理士用CSV DL（カード型） ──────────────────────────── */
+.tax-dl-card {
+  margin: 8px 14px 4px;
+  padding: 12px 14px;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border2);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tax-dl-card__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.04em;
+}
+
+.tax-dl-card__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tax-dl-select {
+  flex: 1;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  background: var(--uz-bg);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 13px;
+  min-width: 0;
+}
+
+.tax-dl-sep {
+  font-size: 13px;
+  color: var(--uz-text3);
+  flex-shrink: 0;
+}
+
+.btn-tax-dl {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-tax-dl:active { background: var(--uz-surface); }
+
+/* ── PLテーブル ──────────────────────────────────────────── */
+.pl-table {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── 前年比 差分表示（金額の下にコンパクト表示） ────────── */
+.pl-value-diff {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+  text-align: right;
+}
+.pl-value-diff--up   { color: var(--uz-text2); }
+.pl-value-diff--down { color: var(--uz-text2); }
+.pl-value-diff--flat { color: var(--uz-text3); }
+
+/* ── 比較情報バナー ──────────────────────────────────────── */
+.pl-compare-info {
+  margin: 4px 14px;
+  padding: 8px 12px;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--uz-text2);
+  display: none;
+}
+.pl-compare-info--show { display: block; }
+
+/* ── 集計なしメッセージ ──────────────────────────────────── */
+.pl-empty {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--uz-text3);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ── 年度累計ナビ（期間ナビと同構造） ───────────────────── */
+.pl-ytd-nav {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px 6px;
+  gap: 8px;
+}
+.pl-ytd-label {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--uz-text);
+}
+
+/* ── 下部余白 ────────────────────────────────────────────── */
+.pl-footer-space { height: 12px; }

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ホーム | ウルトラZAIMUくん PC版</title>
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="css/pc.css">
+</head>
+<body class="pc-body">
+<div id="pc-app" class="pc-layout">
+  <main class="pc-main" id="pc-main">
+    <div class="pc-body-inner">
+      <a href="transactions.html" class="pc-dashboard-card">
+        <h3>取引一覧 →</h3>
+        <p>売上・仕入原価・販管費を1画面で確認・編集／案件紐付けと粗利集計もこちら</p>
+      </a>
+      <div class="pc-card">
+        <div class="pc-filter-row">
+          <label>年
+            <select id="pc-year" class="pc-select"></select>
+          </label>
+          <span class="text-muted" id="pc-status"></span>
+          <div class="pc-tax-dl-row">
+            <span class="text-muted" style="font-size:11px;">税理士用CSV:</span>
+            <select id="pc-tax-from" class="pc-select" aria-label="開始月"></select>
+            <span class="text-muted">〜</span>
+            <select id="pc-tax-to" class="pc-select" aria-label="終了月"></select>
+            <button id="pc-tax-dl-btn" class="pc-btn pc-btn--ghost" type="button">⬇️ DL</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="pl-table" id="pl-table">
+            <thead><tr id="pl-head"></tr></thead>
+            <tbody id="pl-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="pl-chart-wrap">
+        <canvas id="pl-chart"></canvas>
+      </div>
+      <!-- 直近入力 -->
+      <div class="pc-card" id="pc-recent-card">
+        <div class="pc-filter-row">
+          <span style="font-weight:600;">直近の入力</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="pl-table" id="pc-recent-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>種別</th>
+                <th>内容</th>
+                <th class="num">金額</th>
+              </tr>
+            </thead>
+            <tbody id="pc-recent-body"></tbody>
+          </table>
+        </div>
+        <div id="pc-recent-empty" hidden style="padding:16px;text-align:center;color:var(--uz-text2);font-size:13px;">今月の記録はありません</div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="../js/app.js"></script>
+<script src="js/pc-common.js"></script>
+<script src="js/pc-home.js"></script>
+</body>
+</html>

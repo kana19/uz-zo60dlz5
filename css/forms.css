@@ -1,0 +1,663 @@
+/* ============================================================
+   ウルトラZAIMUくん LEO版 PWA — forms.css
+   入力画面共通スタイル（sales / cost）
+   カラーコードの直書き禁止。変数経由のみ。
+   ============================================================ */
+
+/* ── サブページヘッダー ──────────────────────────────────── */
+.sub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 16px;
+  background: var(--uz-surface);
+  border-bottom: 1px solid var(--uz-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.sub-header__back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: var(--btn-height-sm);
+  padding: 0 4px;
+  color: var(--uz-muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  min-width: 60px;
+  transition: color 0.15s;
+}
+
+.sub-header__back:active { color: var(--uz-text); }
+
+.sub-header__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--uz-text);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ── 個別管理アコーディオン ──────────────────────────────── */
+.accordion-section {
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--uz-surface2);
+  border: none;
+  color: var(--uz-muted);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  gap: 8px;
+  letter-spacing: 0.03em;
+}
+
+.accordion-header:active { filter: brightness(0.85); }
+
+.accordion-chevron {
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.accordion-header[aria-expanded="true"] .accordion-chevron {
+  transform: rotate(90deg);
+}
+
+.accordion-body {
+  padding: 0 16px 16px;
+}
+
+/* ── フォームボディ ──────────────────────────────────────── */
+.form-body {
+  padding: 0 0 calc(80px + env(safe-area-inset-bottom));
+}
+
+/* ── 発生日セクション sticky固定 ────────────────────────── */
+.form-section--sticky {
+  position: sticky;
+  top: 56px; /* sub-headerの高さ分 */
+  z-index: 90;
+  background: var(--uz-bg);
+  border-bottom: 1px solid var(--uz-border);
+  padding: 10px 16px;
+}
+
+/* ── フォームセクション ──────────────────────────────────── */
+.form-section {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.form-section:last-child { border-bottom: none; }
+
+.form-section__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* ── 日付入力 ────────────────────────────────────────────── */
+.date-input {
+  width: 100%;
+  height: var(--btn-height-sm);
+  padding: 0 12px;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-md);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 600;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: var(--uz-text2);
+}
+
+/* 発生日＋区分選択を同一行に（経費モーダル用） */
+.date-division-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-division-row .date-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 区分ボタン（仕入原価・販管費） */
+.division-group {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.division-btn {
+  height: var(--btn-height-sm);
+  padding: 0 12px;
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-md);
+  background: var(--uz-surface);
+  color: var(--uz-text2);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.division-btn--active {
+  background: var(--uz-gold);
+  color: var(--uz-on-accent);
+  border-color: var(--uz-gold);
+}
+
+/* ── ラジオカードグループ ────────────────────────────────── */
+.radio-card-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* 諸口がある場合は最後だけ全幅 */
+.radio-card-group--last-full .radio-card:last-child {
+  grid-column: 1 / -1;
+}
+
+.radio-card {
+  padding: 12px 10px;
+  background: var(--uz-surface);
+  border: 1.5px solid var(--uz-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+  text-align: center;
+}
+
+.radio-card:active { filter: brightness(0.93); }
+
+/* 選択状態：シルバー系統一（青・赤廃止） */
+.radio-card--checked-blue,
+.radio-card--checked-red {
+  border-color: var(--uz-gold);
+  background: var(--uz-surface2);
+}
+
+.radio-card__label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--uz-text);
+  line-height: 1.3;
+}
+
+.radio-card__sub {
+  font-size: 11px;
+  color: var(--uz-text3);
+  margin-top: 2px;
+}
+
+/* ── テキスト入力（品目名・メモ） ───────────────────────── */
+.text-input {
+  width: 100%;
+  height: var(--btn-height-sm);
+  padding: 0 14px;
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-md);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 16px;
+  transition: border-color 0.15s;
+}
+
+.text-input::placeholder { color: var(--uz-text3); }
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--uz-gold);
+}
+
+.text-input--red:focus { border-color: var(--uz-red); }
+
+.form-hint {
+  font-size: 12px;
+  color: var(--uz-muted);
+  margin-top: 6px;
+}
+
+/* ── 金額入力（大きい数字） ──────────────────────────────── */
+.amount-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0 4px;
+  border-bottom: 2px solid var(--uz-border);
+  transition: border-color 0.2s;
+}
+
+.amount-wrap:focus-within.amount-wrap--blue { border-color: var(--uz-gold); }
+.amount-wrap:focus-within.amount-wrap--red  { border-color: var(--uz-red);  }
+
+.amount-prefix {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  line-height: 1;
+}
+
+.amount-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-main);
+  font-size: 36px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--uz-text);
+  text-align: right;
+  padding: 0;
+  line-height: 1;
+  caret-color: var(--uz-gold);
+}
+
+.amount-input--red { caret-color: var(--uz-red); }
+
+.amount-input::placeholder { color: var(--uz-border); }
+
+/* ── 税計算表示 ──────────────────────────────────────────── */
+.tax-display {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tax-display-item {
+  flex: 1;
+  background: var(--uz-surface2);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.tax-display-item__label {
+  font-size: 10px;
+  color: var(--uz-muted);
+  margin-bottom: 3px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.tax-display-item__value {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tax-display-item__value--blue { color: var(--uz-gold); }
+.tax-display-item__value--red  { color: var(--uz-red);  }
+
+/* ── 税率トグル（3択） ───────────────────────────────────── */
+.tax-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.tax-btn {
+  flex: 1;
+  height: 42px;
+  border: 2px solid var(--uz-border);
+  border-radius: var(--radius-sm);
+  background: var(--uz-surface2);
+  color: var(--uz-muted);
+  font-family: var(--font-main);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.tax-btn:active { filter: brightness(0.85); }
+
+.tax-btn--active-blue {
+  border-color: var(--uz-gold);
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+}
+
+.tax-btn--active-red {
+  border-color: var(--uz-red);
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+}
+
+/* ── トグルスイッチ（未収/未払） ─────────────────────────── */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.toggle-row__left { flex: 1; }
+
+.toggle-row__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--uz-text);
+}
+
+.toggle-row__desc {
+  font-size: 12px;
+  color: var(--uz-muted);
+  margin-top: 2px;
+}
+
+/* スイッチ本体 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.switch-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border);
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s;
+}
+
+.switch-slider::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  background: var(--uz-muted);
+  border-radius: 50%;
+  transition: transform 0.25s, background 0.25s;
+}
+
+.switch input:checked + .switch-slider {
+  background: var(--uz-amber-bg);
+  border-color: var(--uz-gold);
+}
+
+.switch input:checked + .switch-slider::before {
+  transform: translateX(22px) translateY(-50%);
+  background: var(--uz-gold);
+}
+
+/* コスト用 */
+.switch--red input:checked + .switch-slider {
+  background: var(--uz-red-bg);
+  border-color: var(--uz-red);
+}
+
+.switch--red input:checked + .switch-slider::before {
+  background: var(--uz-red);
+}
+
+/* ── セレクト（ドロップダウン） ──────────────────────────── */
+.form-select {
+  width: 100%;
+  height: var(--btn-height-sm);
+  padding: 0 14px;
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-md);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A09070' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.form-select:focus { outline: none; border-color: var(--uz-gold); }
+
+/* ── 折りたたみセクション ────────────────────────────────── */
+.collapsible-section {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.collapsible-section[hidden] { display: none; }
+
+/* ── 登録ボタンバー（画面下部固定） ─────────────────────── */
+.submit-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: var(--uz-bg);
+  border-top: 1px solid var(--uz-border);
+  z-index: 200;
+}
+
+.submit-btn {
+  width: 100%;
+  height: var(--btn-height);
+  border-radius: var(--radius-md);
+  font-family: var(--font-main);
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.submit-btn:active {
+  filter: brightness(0.85);
+  transform: scale(0.98);
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submit-btn--blue {
+  background: var(--uz-amber-bg);
+  border: 0.5px solid var(--uz-border2);
+  color: var(--uz-gold);
+}
+
+.submit-btn--red {
+  background: var(--uz-amber-bg);
+  border: 0.5px solid var(--uz-border2);
+  color: var(--uz-gold);
+}
+
+/* ── 個別管理行（タブ1・タブ2共通） ─────────────────────── */
+.indiv-row,
+.indiv-tab-row {
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+/* 1行目：顧客選択 ＋ 削除ボタン */
+.indiv-row-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.indiv-row-header .form-select { flex: 1; min-width: 0; }
+
+.indiv-remove-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.indiv-remove-btn:active { filter: brightness(0.8); }
+
+.indiv-manual-input { margin-bottom: 8px; }
+
+.indiv-memo-input { margin-top: 8px; }
+
+/* 2行目：金額入力 ＋ 売掛ラベル付きトグル */
+.indiv-row-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.indiv-amount-wrap {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 0 2px;
+  border-bottom: 1.5px solid var(--uz-border);
+  transition: border-color 0.2s;
+}
+
+.indiv-amount-wrap:focus-within { border-color: var(--uz-gold); }
+
+.indiv-amount-wrap .amount-prefix { font-size: 18px; }
+.indiv-amount-wrap .amount-input  { font-size: 24px; }
+
+.indiv-uncollected-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.indiv-uncollected-text {
+  font-size: 11px;
+  color: var(--uz-muted);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* スモールスイッチ */
+.switch--small {
+  width: 40px;
+  height: 24px;
+}
+
+.switch--small .switch-slider { border-radius: 12px; }
+
+.switch--small .switch-slider::before {
+  width: 18px;
+  height: 18px;
+}
+
+.switch--small input:checked + .switch-slider::before {
+  transform: translateX(16px) translateY(-50%);
+}
+
+/* ＋行追加ボタン */
+.indiv-add-btn {
+  width: 100%;
+  height: 36px;
+  border: 1.5px dashed var(--uz-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--uz-muted);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.indiv-add-btn:active {
+  border-color: var(--uz-gold);
+  color: var(--uz-gold);
+}
+
+/* ── 区分セレクタ（2択） ─────────────────────────────────── */
+.division-group {
+  display: flex;
+  gap: 8px;
+}
+
+.division-btn {
+  flex: 1;
+  height: var(--btn-height-sm);
+  border: 2px solid var(--uz-border);
+  border-radius: var(--radius-md);
+  background: var(--uz-surface2);
+  color: var(--uz-muted);
+  font-family: var(--font-main);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.division-btn:active { filter: brightness(0.85); }
+
+.division-btn--active {
+  border-color: var(--uz-red);
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+}

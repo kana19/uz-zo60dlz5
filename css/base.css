@@ -1,0 +1,2287 @@
+/* ============================================================
+   ウルトラZAIMUくん LEO版 PWA — base.css
+   CSS変数・リセット・共通スタイル
+   カラーコードの直書き禁止。必ず変数経由で参照すること。
+   ============================================================ */
+
+/* ── CSS変数（ライトテーマ・完全モノトーン） ──────────────── */
+:root {
+  /* 背景・サーフェス */
+  --uz-bg:       #FFFFFF;
+  --uz-surface:  #F5F5F5;
+  --uz-surface2: #EBEBEB;
+
+  /* アクセントカラー（モノトーン・ボタン等） */
+  --uz-gold:     #333333;   /* ボタン背景・アクティブ状態 */
+  --uz-gold-lt:  #555555;   /* ホバー */
+  --uz-gold-dk:  #111111;   /* プレス */
+  --uz-blue:     #333333;   /* 後方互換用 */
+  --uz-amber:    #888888;   /* 警告・未収（ライトでの代替） */
+
+  /* ステータスカラー（モノトーン化・色相は持たない／00_原則.md §5-9） */
+  --uz-red:      #1A1A1A;   /* 旧コスト赤 → 濃グレー（文字強調） */
+  --uz-green:    #1A1A1A;   /* 旧利益緑 → 濃グレー（文字強調） */
+  --uz-info:     #666666;   /* 情報・比較表示 → 中グレー */
+
+  /* ステータス別の短縮名（JS参照用・モノトーン） */
+  --uz-danger:   #1A1A1A;
+  --uz-success:  #1A1A1A;
+
+  /* テキスト */
+  --uz-text:     #1A1A1A;
+  --uz-text2:    #666666;
+  --uz-text3:    #999999;
+  --uz-muted:    #666666;   /* 後方互換用 → text2 */
+  --uz-text-muted: #999999; /* JS参照用 */
+
+  /* ボタン上のテキスト（ダーク背景ボタンに白文字） */
+  --uz-on-accent: #FFFFFF;
+
+  /* ボーダー */
+  --uz-border:   rgba(0,0,0,0.10);
+  --uz-border2:  rgba(0,0,0,0.20);
+
+  /* 背景色変種（モノトーン濃淡／00_原則.md §5-9） */
+  --uz-green-bg:   rgba(0,0,0,0.05);   /* 旧薄緑 → 淡グレー（損益強調行） */
+  --uz-red-bg:     rgba(0,0,0,0.05);   /* 旧薄赤 → 淡グレー */
+  --uz-amber-bg:   rgba(0,0,0,0.05);
+  --uz-info-bg:    rgba(0,0,0,0.04);
+
+  /* アラートドット縁 */
+  --uz-silver:   #A0A0A0;
+
+  /* ── カラータイマー専用色（モノトーン例外・ウルトラマン胸の装飾／00_原則.md §5-9） ── */
+  /* 売掛・買掛のお知らせドットのみ状態色を使用する。UI一般には使わない。 */
+  --uz-timer-blue:    #4A90D9;
+  --uz-timer-red:     #C0392B;
+  --uz-timer-red-glow: rgba(192,57,43,0.2);
+
+  /* 入店中マーカー専用（モノトーン基調の例外・ウルトラマン世界観の黄色●点滅） */
+  /* §6 入店中マーカー仕様（02_画面仕様_md.md）に基づく金色 */
+  --uz-marker-active: #E5B939;
+  --uz-marker-active-bg: rgba(229,185,57,0.14);
+
+  /* 損益カラー（後方互換・モノトーン／00_原則.md §5-9） */
+  --uz-sales:    #1A1A1A;
+  --uz-cost:     #1A1A1A;
+  --uz-profit:   #1A1A1A;
+  --uz-loss:     #1A1A1A;
+
+  /* 角丸 */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   20px;
+
+  /* フォント */
+  --font-main:   'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+
+  /* タップターゲット */
+  --btn-height:    56px;
+  --btn-height-sm: 44px;
+
+  /* ボトムナビ高さ */
+  --nav-height:  64px;
+}
+
+/* ── リセット ────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--uz-bg);
+  color: var(--uz-text);
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+}
+
+/* スクロールバー */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--uz-surface); }
+::-webkit-scrollbar-thumb { background: var(--uz-border2); border-radius: 2px; }
+
+/* ── ページラッパー ──────────────────────────────────────── */
+.page-wrapper {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  position: relative;
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
+}
+
+/* ── ヘッダー ────────────────────────────────────────────── */
+.app-header {
+  background: var(--uz-bg);
+  border-bottom: none;
+  padding: calc(env(safe-area-inset-top) + 32px) 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-header__store {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--uz-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* ── ブランド表示（店舗ロゴ画像／店舗名テキストのフォールバック） ──────
+   課題1：app.js の uzRenderBrand が data-uz-brand 要素へ
+   <img class="uz-brand-logo"> または <span class="uz-brand-text"> を描画する。
+   ロゴ推奨サイズ 240×60px。height 基準で原寸比を保持しつつ枠内に収める。 */
+.uz-brand-logo {
+  display: inline-block;
+  height: 40px;
+  max-width: 240px;
+  width: auto;
+  object-fit: contain;
+  vertical-align: middle;
+}
+.uz-brand-text {
+  font: inherit;
+  color: inherit;
+}
+/* スマホ上部ヘッダーのロゴはやや大きめに（タップ領域中央） */
+.app-header__store .uz-brand-logo { height: 48px; max-width: 260px; }
+
+/* ── ホームsticky固定エリア（ヘッダー〜タブを一体固定） ──── */
+.home-sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--uz-bg);
+}
+
+/* iPad表示時はhome-sticky-topを非表示（iPad用レイアウトが代替） */
+body.is-ipad .home-sticky-top {
+  display: none;
+}
+
+/* ── ホーム日時（ボタン上） ──────────────────────────────── */
+.home-datetime {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  padding: 4px 16px 6px;
+}
+
+.home-datetime__date {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--uz-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-datetime__time {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--uz-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── スクロール領域 ──────────────────────────────────────── */
+.page-body {
+  padding: 16px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── カード ──────────────────────────────────────────────── */
+.card {
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.card__header {
+  padding: 14px 16px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.card__body {
+  padding: 12px 16px 14px;
+}
+
+/* ── 入力ボタン（売上・コスト） ──────────────────────────── */
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: var(--btn-height);
+  padding: 0 20px;
+  border: none;
+  outline: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-main);
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  transition: filter 0.15s, transform 0.1s;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn:active {
+  filter: brightness(0.85);
+  transform: scale(0.98);
+}
+
+.action-btn--sales {
+  background: var(--uz-gold);
+  color: var(--uz-on-accent);
+}
+
+.action-btn--cost {
+  background: var(--uz-gold);
+  color: var(--uz-on-accent);
+}
+
+.action-btn--neutral {
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+}
+
+.action-btn__icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.action-btn__label {
+  flex: 1;
+  text-align: left;
+}
+
+/* カラータイマードット位置（ボタン右寄り縦中央）
+   ウルトラマンの胸中央のカラータイマーをモチーフ */
+.action-btn__dot {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ── アラートドット ───────────────────────────────────────── */
+.adot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* 通常：金丸＋シルバー縁 */
+.adot--blue {
+  background: var(--uz-gold);
+  border: 2px solid var(--uz-silver);
+}
+
+/* 緊急：赤点滅（縁は常時・赤fillのみ点滅） */
+.adot--red-blink {
+  background: transparent;
+  border: 2px solid var(--uz-silver);
+  position: relative;
+  overflow: hidden;
+}
+
+.adot--red-blink::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--uz-timer-red);
+  animation: fillblink 1s ease-in-out infinite;
+}
+
+@keyframes fillblink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── 入店記録行 ──────────────────────────────────────────── */
+.clockin-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px;
+}
+
+.clockin-row .action-btn {
+  flex: 1;
+}
+
+/* ── 勤怠リスト ──────────────────────────────────────────── */
+.staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.staff-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--uz-surface);
+  transition: background 0.15s;
+}
+
+.staff-item:first-child {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.staff-item:last-child {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.staff-item:only-child {
+  border-radius: var(--radius-md);
+}
+
+.staff-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--uz-marker-active);
+  flex-shrink: 0;
+  box-shadow: 0 0 6px var(--uz-marker-active);
+}
+
+.staff-dot--off {
+  background: var(--uz-muted);
+  box-shadow: none;
+}
+
+.staff-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.staff-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--uz-text);
+}
+
+.staff-time {
+  font-size: 12px;
+  color: var(--uz-muted);
+  margin-top: 2px;
+}
+
+.staff-clockout-btn {
+  height: var(--btn-height-sm);
+  padding: 0 14px;
+  border: 1px solid var(--uz-border);
+  border-radius: var(--radius-sm);
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.15s;
+}
+
+.staff-clockout-btn:active {
+  filter: brightness(0.85);
+}
+
+/* ホーム出勤状況：名前｜出勤｜→｜退勤｜0.0h｜カラータイマー を1行・列揃えで表示。
+   退勤操作は履歴の修正フォームに集約し、ホームは状態表示に専念（§3-1 改定）。 */
+.home-attend-row {
+  display: grid;
+  grid-template-columns: 90px auto 12px auto auto auto;
+  align-items: center;
+  column-gap: 8px;
+  padding: 11px 16px;
+  background: var(--uz-surface);
+  font-size: 13px;
+  color: var(--uz-text);
+}
+.home-attend-row + .home-attend-row { border-top: 1px solid var(--uz-border); }
+.home-attend-row .ha-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.home-attend-row .ha-name--off { color: var(--uz-muted); }
+.home-attend-row .ha-in,
+.home-attend-row .ha-out { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.home-attend-row .ha-arrow { color: var(--uz-muted); text-align: center; }
+.home-attend-row .ha-dur { color: var(--uz-muted); font-size: 12px; font-variant-numeric: tabular-nums; min-width: 44px; }
+.home-attend-row .ha-dot { justify-self: start; display: inline-flex; align-items: center; }
+/* iPad：名前9文字相当・開始時刻〜0.0hの数字を大きく（バランス） */
+body.is-ipad .home-attend-row {
+  grid-template-columns: 130px auto 14px auto auto auto;
+  font-size: 15px;
+  padding: 12px 14px;
+}
+body.is-ipad .home-attend-row .ha-in,
+body.is-ipad .home-attend-row .ha-out { font-size: 16px; }
+body.is-ipad .home-attend-row .ha-dur { font-size: 15px; min-width: 52px; }
+
+.staff-more {
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--uz-text);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+/* ── 損益サマリー ────────────────────────────────────────── */
+/* 全行：ラベル+▼左 / 金額右端 の2列flex */
+.pl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: none;
+  background: var(--uz-bg);
+}
+
+.pl-row:last-child { border-bottom: none; }
+
+/* ラベル＋▼をひとまとまりに */
+.pl-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pl-label {
+  font-size: 16px;
+  color: var(--uz-text2);
+}
+
+.pl-value {
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--uz-text);
+  text-align: right;
+}
+
+/* 仕入原価・販管費：薄いシルバー */
+.pl-row--surface {
+  background: var(--uz-surface);
+}
+
+/* 粗利 */
+.pl-row--result {
+  background: var(--uz-bg);
+  margin: 0;
+  padding: 10px 14px;
+  border-bottom: none !important;
+}
+
+.pl-row--result .pl-label {
+  color: var(--uz-text2);
+  font-weight: 500;
+}
+
+/* 経常利益 */
+.pl-row--highlight {
+  background: var(--uz-bg) !important;
+  margin: 0 !important;
+  padding: 10px 14px !important;
+  border-radius: 0 !important;
+}
+
+.pl-row--highlight .pl-label {
+  color: var(--uz-text) !important;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.pl-row--highlight .pl-value {
+  color: var(--uz-text) !important;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pl-value--negative {
+  color: var(--uz-text) !important;
+}
+
+.pl-month-label {
+  font-size: 13px;
+  color: var(--uz-text3);
+  padding: 10px 14px 4px;
+  text-align: center;
+}
+
+/* ── 入力ボタン カラータイマー（ボタン枠でなくドット表示） ── */
+/* 全ボタンのフォーカス枠を除去 */
+.action-btn:focus,
+.action-btn:focus-visible {
+  outline: none;
+}
+
+/* .action-btn--half：ボタン枠装飾なし（カラータイマーはドットで表示） */
+.action-btn--half {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  height: 84px;
+  padding: 10px 18px;
+  gap: 5px;
+  outline: none;
+}
+
+/* ── カラータイマー（SSOT・02_画面仕様.md §5-4） ──────────────
+   外枠＝シルバーグレー(--uz-silver)で固定・状態によらず不変・点滅しない。
+   核(__core)＝状態色。点滅は核のみ。消灯時は核を透明にし縁のみ残す。
+   設置箇所差はサイズ修飾(--home/--hist/--sidebar)のみ。
+   状態：売掛買掛=消灯/青/赤/赤点滅、勤怠稼働=グレー/青/赤/赤点滅。 */
+.uz-timer-dot {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px solid var(--uz-silver);
+  background: transparent;
+  flex-shrink: 0;
+  line-height: 0;
+  vertical-align: middle;
+}
+.uz-timer-dot__core {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;   /* 消灯：縁のみ */
+}
+.uz-timer-dot__core--blue {
+  background: var(--uz-timer-blue);
+  box-shadow: 0 0 0 2px rgba(74,144,217,0.22);
+}
+.uz-timer-dot__core--red {
+  background: var(--uz-timer-red);
+  box-shadow: 0 0 0 2px var(--uz-timer-red-glow);
+}
+.uz-timer-dot__core--gray {
+  background: var(--uz-bg);   /* 退勤済：枠のみ・中は白 */
+}
+.uz-timer-dot__core--blink {
+  background: var(--uz-timer-red);
+  animation: uz-timer-core-blink 0.8s ease-in-out infinite;
+}
+@keyframes uz-timer-core-blink {     /* 赤 ⇄ シルバーグレー(--uz-silver) の交互点滅 */
+  0%, 100% { background-color: var(--uz-timer-red); }
+  50%      { background-color: var(--uz-silver); }
+}
+/* 設置箇所別サイズ（差はサイズのみ） */
+.uz-timer-dot--home    { width: 10px; height: 10px; }
+.uz-timer-dot--hist    { width: 10px; height: 10px; }
+.uz-timer-dot--sidebar { width: 16px; height: 16px; border-width: 2.5px; }
+
+.action-btn__main-label {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--uz-on-accent);
+}
+
+.action-btn__sub {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--uz-on-accent);
+  opacity: 0.75;
+}
+
+.action-btn__sub .ti {
+  font-size: 14px;
+}
+
+/* ── 損益アコーディオン ──────────────────────────────────── */
+.pl-row--accordion {
+  flex-direction: column;
+  padding: 0;
+  border-bottom: none;
+}
+
+.pl-row--surface {
+  background: var(--uz-surface);
+}
+
+.pl-accordion-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-main);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pl-row--surface .pl-accordion-btn {
+  padding: 12px 14px;
+}
+
+.pl-chevron {
+  font-size: 15px;
+  color: var(--uz-text3);
+  transition: transform 0.2s;
+  text-align: center;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.pl-chevron--open {
+  transform: rotate(180deg);
+}
+
+.pl-accordion-detail {
+  width: 100%;
+  border-top: 1px solid var(--uz-border);
+  padding: 6px 0 8px;
+}
+
+.pl-row--surface .pl-accordion-detail {
+  padding: 6px 10px 8px;
+}
+
+.pl-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--uz-text2);
+}
+
+.pl-detail-row__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
+.pl-detail-row__val {
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* ボトムナビアイコンをTabler対応に */
+.nav-item__icon.ti {
+  font-size: 24px;
+  line-height: 1;
+}
+.section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 4px;
+  margin-bottom: -4px;
+}
+
+/* ── ボトムナビ ──────────────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--uz-surface);
+  border-top: 1px solid var(--uz-border);
+  display: flex;
+  align-items: stretch;
+  z-index: 200;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--uz-text3);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.nav-item:active {
+  background: var(--uz-surface2);
+}
+
+.nav-item__icon {
+  font-size: 22px;
+  line-height: 1;
+  color: inherit;
+}
+
+.nav-item__label {
+  font-size: 10px;
+  font-weight: 600;
+  color: inherit;
+  font-family: var(--font-main);
+}
+
+.nav-item--active {
+  color: var(--uz-text);
+}
+
+.nav-item--active .nav-item__icon,
+.nav-item--active .nav-item__label {
+  color: var(--uz-text);
+}
+
+/* ── ユーティリティ ──────────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* スピナー（GAS通信中） */
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--uz-border);
+  border-top-color: var(--uz-gold);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* トースト通知 */
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--uz-surface2);
+  color: var(--uz-text);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 300;
+  max-width: 320px;
+  text-align: center;
+  pointer-events: none;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+.toast--show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast--success {
+  border-left: 3px solid var(--uz-green);
+}
+
+.toast--error {
+  border-left: 3px solid var(--uz-red);
+}
+
+/* ローディングオーバーレイ */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(18,16,14,0.8);
+  z-index: 400;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-overlay--show {
+  display: flex;
+}
+
+/* ── 確定申告タイマー ─────────────────────────────────────── */
+.tax-timer-blue {
+  background: var(--uz-amber-bg);
+  border: 0.5px solid var(--uz-border2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--uz-text2);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.tax-timer-red {
+  background: var(--uz-amber-bg);
+  border: 0.5px solid var(--uz-border2);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--uz-red);
+  text-align: center;
+  margin-bottom: 12px;
+  animation: blink-timer 1s ease-in-out infinite;
+}
+
+@keyframes blink-timer {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   iPad 2カラム・サイドバーナビ対応（768px〜1024px）
+   スマホ幅（〜767px）には一切影響しない
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── iPad左/右カラム：モバイルでは縦積みのflex列として振る舞う ── */
+.ipad-col--left,
+.ipad-col--right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── サイドバーナビ：モバイルでは非表示 ── */
+.nav-sidebar { display: none; }
+
+/* ── iPad専用右パネル・右カラム：モバイルでは非表示 ── */
+.ipad-form-right,
+.ipad-hist-right { display: none; }
+
+/* ── clockin 勤怠リスト：モバイルではsubmitバー分の余白を確保 ── */
+.ipad-clockin-right {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+/* ════════════════════════════════════════════════════════════
+   iPad メディアクエリ（768px〜1024px）
+   ════════════════════════════════════════════════════════════ */
+@media (min-width: 600px) and (max-width: 1280px),
+body.is-ipad {
+
+  /* ── サイドバーナビ ───────────────────────────────────── */
+  .nav-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    background: var(--uz-surface);
+    border-right: 1px solid var(--uz-border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 200;
+    overflow-y: auto;
+  }
+
+  .nav-sidebar__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 32px 16px 26px;
+  }
+  .nav-sidebar__logo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--uz-gold);
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+  .nav-sidebar__logo .uz-brand-logo {
+    height: 40px;
+    max-width: 168px;
+  }
+  /* サイドバー日時（カラータイマー直下・中央寄せ・リアルタイム） */
+  .sidebar-datetime {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    width: 100%;
+  }
+  .sidebar-datetime__date {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--uz-text2);
+    letter-spacing: 0.02em;
+  }
+  .sidebar-datetime__time {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--uz-text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  /* 課題1：中央の店名ヘッダーは隠す（サイドバーロゴを主表示とする） */
+  .app-header__store { display: none; }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: var(--uz-muted);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .sidebar-item:hover { background: var(--uz-surface2); }
+  .sidebar-item--active { color: var(--uz-gold); }
+  .sidebar-item__icon { font-size: 20px; line-height: 1; flex-shrink: 0; width: 22px; text-align: center; }
+
+  /* ── ボトムナビ非表示 ─────────────────────────────────── */
+  .bottom-nav { display: none !important; }
+
+  /* ── ページラッパー：サイドバー幅分右オフセット ──────── */
+  .page-wrapper {
+    max-width: none;
+    margin-left: 200px;
+    width: calc(100% - 200px);
+    padding-bottom: 24px;
+    min-height: 100dvh;
+  }
+
+  /* ── ホーム page-body：2カラムグリッド化 ────────────── */
+  .page-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0;
+    align-items: start;
+  }
+
+  .ipad-col--left,
+  .ipad-col--right {
+    padding: 16px;
+  }
+
+  .ipad-col--left {
+    border-right: 1px solid var(--uz-border);
+    min-height: calc(100dvh - 52px);
+  }
+
+  /* ── フォーム画面（sales/cost/clockin）2カラム化 ──────── */
+  .ipad-form-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    align-items: start;
+  }
+
+  .ipad-form-wrap > .form-body {
+    border-right: 1px solid var(--uz-border);
+    min-height: calc(100dvh - 56px);
+  }
+
+  .ipad-form-right {
+    display: block;
+    padding: 16px;
+  }
+
+  /* ── clockin専用左カラム ──────────────────────────────── */
+  .ipad-clockin-left {
+    border-right: 1px solid var(--uz-border);
+    min-height: calc(100dvh - 56px);
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+
+  .ipad-clockin-right {
+    padding: 16px;
+  }
+
+  /* ── 履歴画面 2カラム化 ──────────────────────────────── */
+  .ipad-hist-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    align-items: start;
+  }
+
+  .ipad-hist-left {
+    border-right: 1px solid var(--uz-border);
+  }
+
+  .ipad-hist-right {
+    display: block;
+    padding: 16px;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* ── 右パネル共通 ─────────────────────────────────────── */
+  .ipad-right-panel {
+    background: var(--uz-surface);
+    border: 1px solid var(--uz-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .ipad-right-panel__header {
+    padding: 14px 16px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--uz-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--uz-border);
+  }
+
+  .ipad-right-panel__body {
+    padding: 12px 16px 14px;
+  }
+
+  .ipad-placeholder {
+    color: var(--uz-muted);
+    font-size: 13px;
+    text-align: center;
+    padding: 40px 16px;
+    line-height: 1.7;
+  }
+
+  /* ── 登録ボタンバー：サイドバー分右オフセット ────────── */
+  .submit-bar,
+  .clockin-submit-bar {
+    left: 200px;
+    transform: none;
+    max-width: none;
+    width: calc(100% - 200px);
+  }
+
+  /* ── トースト位置補正 ──────────────────────────────────── */
+  .toast {
+    left: calc(200px + (100% - 200px) / 2);
+    bottom: 20px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   iPad PC寄りレイアウト（body.is-ipad クラス専用）
+   スマホ版（〜767px）は一切影響しない
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── ホーム：左2/3 + 右1/3 グリッド ─────────────────────── */
+body.is-ipad .page-body {
+  grid-template-columns: 2fr 1fr;
+}
+
+/* ── ホーム：アクションボタン小型化（iPad左カラム内） ───── */
+body.is-ipad .ipad-col--left .action-btn {
+  height: 44px;
+  font-size: 15px;
+}
+
+/* ── 履歴パネル（sales/cost 左カラム）：モバイルでは非表示 ── */
+.ipad-history-panel { display: none; }
+
+body.is-ipad .ipad-history-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--uz-border);
+  min-height: calc(100dvh - 56px);
+  overflow: hidden;
+}
+
+body.is-ipad .ipad-history-panel__header {
+  padding: 14px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uz-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--uz-border);
+  background: var(--uz-surface);
+  flex-shrink: 0;
+}
+
+body.is-ipad .ipad-hist-scroll {
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ── iPad 履歴テーブル ───────────────────────────────────── */
+body.is-ipad .ipad-hist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body.is-ipad .ipad-hist-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-gold);
+  letter-spacing: 0.06em;
+  background: var(--uz-surface);
+  border-bottom: 1px solid var(--uz-border);
+  white-space: nowrap;
+}
+
+body.is-ipad .ipad-hist-table td {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--uz-text);
+  background: var(--uz-surface);
+  border-bottom: 1px solid var(--uz-border);
+}
+
+body.is-ipad .ipad-hist-table tr:last-child td { border-bottom: none; }
+body.is-ipad .ipad-td-r { text-align: right; font-variant-numeric: tabular-nums; }
+body.is-ipad .ipad-td-c { text-align: center; }
+body.is-ipad .ipad-hist-empty {
+  text-align: center !important;
+  color: var(--uz-muted);
+  padding: 40px 16px !important;
+}
+
+/* ── sales/cost：フォームは右カラム（border-right 解除） ── */
+body.is-ipad .ipad-form-wrap > .form-body {
+  border-right: none;
+}
+
+/* ── iPad 履歴フラットテーブル ────────────────────────────── */
+body.is-ipad .ipad-hist-flat-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body.is-ipad .ipad-hist-flat-table th {
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--uz-text2);
+  border-bottom: 1px solid var(--uz-border);
+  text-align: left;
+  background: var(--uz-surface2);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+body.is-ipad .ipad-hist-flat-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--uz-border);
+  color: var(--uz-text);
+  font-size: 13px;
+}
+
+body.is-ipad .ipad-hist-flat-table tr:last-child td { border-bottom: none; }
+
+/* iPad 取引テーブル 列幅最適化（全列間を均一に）
+   ・全セルの左右パディングを2pxに統一 → 隣接列の間隔を全て同一(約4px)にする
+   ・発生日/区分/金額/タイマー/編集は内容幅（width:1%＋nowrap）で固定し余白を吸収しない
+   ・適用/メモが残り幅を取り、超過分は…で省略（横幅と許容文字数を確保） */
+body.is-ipad .ipad-hist-flat-table th,
+body.is-ipad .ipad-hist-flat-table td {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+/* 左側グループ（発生日・区分・適用・メモ＝1〜4列目）は区切りを広めに取る。
+   右側グループ（金額・タイマー・編集＝5〜7列目）は上記の詰めた間隔を維持。 */
+body.is-ipad .ipad-hist-flat-table th:nth-child(-n+4),
+body.is-ipad .ipad-hist-flat-table td:nth-child(-n+4) {
+  padding-left: 9px;
+  padding-right: 9px;
+}
+body.is-ipad .ipad-hist-flat-table td.ipad-td-date,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-div,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-dow,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-staff,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-emp,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-times,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-dur,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-r,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-timer,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-edit {
+  width: 1%;
+  white-space: nowrap;
+}
+body.is-ipad .ipad-hist-flat-table td.ipad-td-emp {
+  font-size: 12px;
+  color: var(--uz-muted);
+}
+body.is-ipad .ipad-hist-flat-table td.ipad-td-dur {
+  font-size: 12px;
+  color: var(--uz-muted);
+}
+body.is-ipad .ipad-hist-flat-table td.ipad-td-r     { text-align: right; }
+body.is-ipad .ipad-hist-flat-table td.ipad-td-timer { text-align: center; }
+body.is-ipad .ipad-hist-flat-table td.ipad-td-edit  { text-align: right; }
+body.is-ipad .ipad-hist-flat-table .hist-row__timer {
+  margin-left: 0;
+  width: 16px;
+}
+body.is-ipad .ipad-hist-flat-table td.ipad-td-applic,
+body.is-ipad .ipad-hist-flat-table td.ipad-td-memo {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.is-ipad .ipad-hist-row {
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+body.is-ipad .ipad-hist-row:hover {
+  background: var(--uz-surface);
+}
+
+body.is-ipad .ipad-hist-row--selected > td {
+  background: #DADADA !important;
+  border-top: 2px solid var(--uz-text);
+  border-bottom: 2px solid var(--uz-text);
+}
+body.is-ipad .ipad-hist-row--selected > td:first-child {
+  box-shadow: inset 5px 0 0 var(--uz-text);
+}
+
+/* ── iPad 右パネル内修正フォーム ──────────────────────────── */
+body.is-ipad .ipad-right-form-body {
+  padding: 14px 16px;
+}
+
+body.is-ipad .ipad-right-form-body .edit-field {
+  margin-bottom: 12px;
+}
+
+body.is-ipad .ipad-right-form-body .edit-label {
+  font-size: 11px;
+}
+
+body.is-ipad .ipad-right-form-body .edit-input {
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+body.is-ipad .ipad-right-form-body .edit-save-btn {
+  width: 100%;
+  padding: 12px;
+}
+
+/* ── 未収・買掛け画面：iPad 2カラム ─────────────────────── */
+body.is-ipad .ipad-uc-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: start;
+}
+
+body.is-ipad .ipad-uc-left {
+  border-right: 1px solid var(--uz-border);
+}
+
+/* ── iPad ホームダッシュボード ───────────────────────────── */
+
+/* ホームページでは既存の左右カラムを非表示 */
+body.is-ipad[data-page="home"] .ipad-col--left,
+body.is-ipad[data-page="home"] .ipad-col--right { display: none; }
+
+/* ダッシュボード自体はモバイルでは非表示 */
+.ipad-home-dashboard { display: none; }
+
+body.is-ipad .ipad-home-dashboard {
+  display: grid !important;
+  grid-column: 1 / -1;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: 0;
+  box-sizing: border-box;
+  align-items: stretch;
+  height: calc(100dvh - 52px);
+  overflow: hidden;
+}
+
+/* 左カラム：①損益＋②グラフ＋CSVを縦積み（上詰め・右カラム見出しと高さを揃える） */
+body.is-ipad .ipad-home-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0;
+  border-right: 1px solid var(--uz-border);
+  padding: 28px 24px 32px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 右カラム：③直近入力（全高） */
+body.is-ipad .ipad-home-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 28px 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ── フェーズA：iPad 上端整列 ───────────────────────────────
+   各画面の見出し帯（history-header / settings-header）を撤廃し、
+   先頭コンテンツをサイドバー屋号の高さ（≈28px）に統一する。
+   ページ識別はサイドバーのアクティブ表示が担う（02_画面仕様.md §2-2）。 */
+body.is-ipad[data-page="history"] .history-header { display: none; }
+/* 左カラム：上部帯をタブと同色(surface)で連続させ白背景の境目を消す。
+   28px の屋号整列は固定帯(hist-fixed-top)の上余白として確保する。 */
+body.is-ipad .ipad-hist-left  { padding-top: 0; }
+body.is-ipad[data-page="history"] .hist-fixed-top {
+  background: var(--uz-surface);
+  padding-top: 28px;
+}
+body.is-ipad .ipad-hist-right { padding-top: 28px; }
+body.is-ipad[data-page="settings"] .settings-header { display: none; }
+body.is-ipad[data-page="settings"] .settings-section:first-of-type { margin-top: 28px; }
+body.is-ipad .ipad-dash-section--full {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+body.is-ipad .ipad-dash-section--full .ipad-recent-table { flex-shrink: 0; }
+
+/* ── ダッシュボード共通セクション（枠線撤廃・横線と余白のみ） ─── */
+body.is-ipad .ipad-dash-section {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--uz-border);
+}
+body.is-ipad .ipad-home-left .ipad-dash-section:last-child,
+body.is-ipad .ipad-home-right .ipad-dash-section:last-child,
+body.is-ipad .ipad-dash-section--chart,
+body.is-ipad .ipad-dash-section--pl,
+body.is-ipad .ipad-dash-section:has(+ .ipad-tax-dl-panel) {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+/* ①損益と②グラフの間は余白のみで区切る（線なし） */
+body.is-ipad .ipad-dash-section--pl { margin-bottom: 20px; }
+
+body.is-ipad .ipad-dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 12px;
+  border-bottom: none;
+}
+
+body.is-ipad .ipad-dash-header__title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ①損益：月次/年度累計タブ（月次管理タブと統一・プルダウン左を2等分） */
+body.is-ipad .ipad-pl-tabs {
+  display: flex;
+  gap: 0;
+  flex: 1;
+}
+/* 右カラム（直近の入力／出勤状況）のタブは縦flexコンテナ直下のため、
+   .ipad-pl-tabs の flex:1 が縦方向に伸長してタブ帯が肥大・下方化する。
+   横幅2等分は内部ボタンの flex:1 が担うので、タブ帯自体は自然高さ・上端固定にする。 */
+body.is-ipad .ipad-home-right .ipad-pl-tabs { flex: 0 0 auto; }
+body.is-ipad .ipad-pl-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 12px 4px;
+  margin-right: 0;
+  font-size: 17px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--uz-text3);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+body.is-ipad .ipad-pl-tab:active { opacity: 0.75; }
+body.is-ipad .ipad-pl-tab.active {
+  color: var(--uz-text);
+  border-bottom: 2px solid var(--uz-text);
+}
+
+body.is-ipad .ipad-month-select {
+  background: var(--uz-bg);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+/* ── ダッシュボードテーブル ───────────────────────── */
+body.is-ipad .ipad-dash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+body.is-ipad .ipad-dash-section--pl .ipad-dash-table { margin-top: 6px; }
+
+body.is-ipad .ipad-dash-table th {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--uz-text2);
+  border-bottom: 1px solid var(--uz-border);
+  text-align: left;
+  background: var(--uz-surface2);
+}
+
+body.is-ipad .ipad-dash-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--uz-border);
+  color: var(--uz-text);
+  font-size: 14px;
+}
+
+body.is-ipad .ipad-dash-table tr:last-child td { border-bottom: none; }
+
+body.is-ipad .ipad-dash-table .row-gross,
+body.is-ipad .ipad-dash-table .row-profit {
+  background: var(--uz-surface);
+}
+
+body.is-ipad .ipad-dash-table .row-profit td:last-child {
+  color: var(--uz-text);
+  font-weight: 700;
+}
+
+/* 直近入力テーブル固有 */
+body.is-ipad .ipad-recent-table td:last-child {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+body.is-ipad .ipad-recent-table .recent-sales { color: var(--uz-text); }
+body.is-ipad .ipad-recent-table .recent-cost  { color: var(--uz-text2); }
+
+/* 直近入力 7列（登録日・操作・発生日・区分・適用・メモ・金額・→ §2-2）コンパクト化 */
+body.is-ipad .ipad-recent-table th,
+body.is-ipad .ipad-recent-table td { padding: 8px 8px; font-size: 12px; }
+body.is-ipad .ipad-recent-table .ipad-rc-reg,
+body.is-ipad .ipad-recent-table .ipad-rc-occ { white-space: nowrap; color: var(--uz-text2); }
+body.is-ipad .ipad-recent-table .ipad-rc-item { font-weight: 600; }
+body.is-ipad .ipad-recent-table .ipad-rc-memo { color: var(--uz-text2); }
+
+/* 操作（新規/編集）・区分バッジ（スマホ／iPad共通・モノトーン） */
+.recent-op { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+.recent-op--new  { background: var(--uz-surface2); color: var(--uz-text2); }
+.recent-op--edit { background: var(--uz-text); color: var(--uz-on-accent); }
+.recent-div { font-size: 11px; font-weight: 600; color: var(--uz-text2); white-space: nowrap; }
+
+body.is-ipad .ipad-dash-empty {
+  padding: 24px 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--uz-text2);
+}
+
+/* ── ダッシュボードアクション ─────────────────────── */
+body.is-ipad .ipad-dash-actions {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--uz-border);
+}
+
+body.is-ipad .ipad-btn-ghost {
+  flex: 1;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--uz-border);
+  border-radius: 6px;
+  color: var(--uz-text2);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+body.is-ipad .ipad-btn-ghost:active { opacity: 0.7; }
+
+body.is-ipad .ipad-btn-link {
+  display: block;
+  padding: 14px;
+  color: var(--uz-text2);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+body.is-ipad .ipad-btn-link:active { opacity: 0.7; }
+
+/* 出勤状況 */
+body.is-ipad .ipad-dash-staff {
+  padding: 0;
+}
+
+/* 月次グラフ */
+body.is-ipad .ipad-chart-wrap {
+  padding: 4px 14px 8px;
+  height: 220px;
+  position: relative;
+}
+/* グラフ独自凡例（見出し行に右寄せ・月次推移と同じ高さ） */
+body.is-ipad .ipad-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+body.is-ipad .ipad-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--uz-text2);
+  font-weight: 600;
+}
+body.is-ipad .ipad-legend-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  display: inline-block;
+}
+body.is-ipad .ipad-legend-dot[data-c="cogs"]   { background: #C9CDD2; }
+body.is-ipad .ipad-legend-dot[data-c="sga"]    { background: #8A929B; }
+body.is-ipad .ipad-legend-dot[data-c="profit"] { background: #4A90D9; }
+
+body.is-ipad .ipad-chart-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--uz-text2);
+  pointer-events: none;
+}
+
+body.is-ipad #ipad-tax-timer-right {
+  margin-top: 0;
+}
+
+/* ── iPad 税理士・銀行提出用CSV DLパネル（常時表示） ──────── */
+body.is-ipad .ipad-tax-dl-panel {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 12px 14px;
+  background: var(--uz-surface2);
+  border: none;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+body.is-ipad .ipad-tax-dl-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+body.is-ipad .ipad-tax-dl-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+body.is-ipad .ipad-tax-select {
+  flex: 1;
+  height: 34px;
+  border-radius: 6px;
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  color: var(--uz-text);
+  font-size: 12px;
+  font-family: inherit;
+  padding: 0 6px;
+  min-width: 0;
+}
+
+body.is-ipad .ipad-tax-sep {
+  font-size: 13px;
+  color: var(--uz-text2);
+  flex-shrink: 0;
+}
+
+body.is-ipad .ipad-tax-dl-btn {
+  width: 100%;
+  padding: 9px;
+  background: var(--uz-text);
+  border: 1px solid var(--uz-text);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+body.is-ipad .ipad-tax-dl-btn:active { opacity: 0.75; }
+
+/* ═══════════════════════════════════════════════════════════
+   iPad 売上・コスト入力パネル
+   ═══════════════════════════════════════════════════════════ */
+
+/* モバイルでは非表示 */
+.ipad-sc-wrap { display: none; }
+
+/* iPad時：既存ipad-form-wrapを非表示 */
+body.is-ipad[data-page="sales"] .ipad-form-wrap,
+body.is-ipad[data-page="cost"]  .ipad-form-wrap { display: none !important; }
+
+/* iPad時：新パネルを2カラムグリッドで表示 */
+body.is-ipad[data-page="sales"] .ipad-sc-wrap,
+body.is-ipad[data-page="cost"]  .ipad-sc-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  height: calc(100dvh - 56px);
+}
+
+/* ── 左カラム ──────────────────────────────────────────── */
+body.is-ipad .ipad-sc-left {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--uz-border);
+  overflow: hidden;
+  height: 100%;
+}
+
+/* サマリー3カード */
+body.is-ipad .ipad-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+body.is-ipad .ipad-summary-card {
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+body.is-ipad .ipad-summary-card--amber {
+  border-color: var(--uz-border2);
+}
+
+body.is-ipad .ipad-summary-card__label {
+  font-size: 10px;
+  color: var(--uz-text2);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.is-ipad .ipad-summary-card__value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--uz-text);
+}
+
+body.is-ipad .ipad-summary-card--amber .ipad-summary-card__value {
+  color: var(--uz-gold);
+}
+
+/* フィルタバー */
+body.is-ipad .ipad-filter-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--uz-border);
+  flex-shrink: 0;
+}
+
+body.is-ipad .ipad-filter-select {
+  flex: 1;
+  background: var(--uz-surface);
+  color: var(--uz-text);
+  border: 1px solid var(--uz-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+/* 一覧ボディ */
+body.is-ipad .ipad-list-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* 一覧行 */
+body.is-ipad .ipad-list-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--uz-border);
+  cursor: pointer;
+  gap: 8px;
+}
+
+body.is-ipad .ipad-list-row:hover,
+body.is-ipad .ipad-list-row--selected {
+  background: var(--uz-surface2);
+}
+
+body.is-ipad .ipad-list-row--unpaid {
+  background: var(--uz-amber-bg);
+  border-left: 3px solid var(--uz-gold);
+  padding-left: 11px;
+}
+
+body.is-ipad .ipad-list-row--locked {
+  opacity: 0.5;
+  background: var(--uz-surface);
+  cursor: default;
+}
+
+body.is-ipad .ipad-list-row__date {
+  font-size: 12px;
+  color: var(--uz-text2);
+  white-space: nowrap;
+  width: 42px;
+  flex-shrink: 0;
+}
+
+body.is-ipad .ipad-list-row__name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--uz-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.is-ipad .ipad-list-row__amount {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--uz-text);
+  white-space: nowrap;
+}
+
+body.is-ipad .ipad-list-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+body.is-ipad .ipad-list-badge--unpaid {
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+  border: 1px solid var(--uz-border2);
+}
+
+body.is-ipad .ipad-list-badge--locked {
+  background: var(--uz-amber-bg);
+  color: var(--uz-text2);
+}
+
+body.is-ipad .ipad-list-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--uz-text2);
+  font-size: 13px;
+}
+
+/* ── 右カラム ──────────────────────────────────────────── */
+body.is-ipad .ipad-sc-right {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* タブバー */
+body.is-ipad .ipad-input-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--uz-border);
+  flex-shrink: 0;
+}
+
+body.is-ipad .ipad-tab {
+  flex: 1;
+  padding: 12px 4px;
+  font-size: 17px;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  color: var(--uz-text2);
+  cursor: pointer;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+body.is-ipad .ipad-tab.ipad-tab--active {
+  color: var(--uz-gold);
+  border-top-color: var(--uz-gold);
+  font-weight: 600;
+}
+
+/* 取引/勤怠タブ（月次管理）も月見出し(17px)と統一 */
+body.is-ipad .hist-tab { font-size: 17px; }
+
+/* タブコンテンツ */
+body.is-ipad .ipad-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 70px;
+}
+
+/* 登録ボタンを右カラムに合わせる */
+body.is-ipad[data-page="sales"] .submit-bar,
+body.is-ipad[data-page="cost"]  .submit-bar {
+  left: calc(200px + (100% - 200px) / 2);
+  width: calc((100% - 200px) / 2);
+}
+
+/* ── 未収・買掛け一覧（タブ内） ──────────────────────── */
+body.is-ipad .ipad-unpaid-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--uz-border);
+  background: var(--uz-amber-bg);
+}
+
+body.is-ipad .ipad-unpaid-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+body.is-ipad .ipad-unpaid-row__date {
+  font-size: 11px;
+  color: var(--uz-text2);
+}
+
+body.is-ipad .ipad-unpaid-row__name {
+  font-size: 13px;
+  color: var(--uz-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.is-ipad .ipad-unpaid-row__amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--uz-gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+body.is-ipad .ipad-clear-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--uz-gold);
+  border-radius: 6px;
+  color: var(--uz-gold);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+body.is-ipad .ipad-clear-btn:active { opacity: 0.7; }
+body.is-ipad .ipad-clear-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* サイドバー最近履歴 */
+.sidebar-recent {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--uz-border);
+  overflow: hidden;
+}
+
+.sidebar-recent__title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 12px 8px;
+}
+
+.sidebar-recent__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 12px;
+  font-size: 11px;
+  color: var(--uz-text2);
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.sidebar-recent__item:last-child { border-bottom: none; }
+
+.sidebar-recent__item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 6px;
+}
+
+.sidebar-recent__item-amt {
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   iPad 入店記録パネル
+   ══════════════════════════════════════════════════════════ */
+.ipad-clockin-panel {
+  display: none;
+}
+
+body.is-ipad[data-page="clockin"] .ipad-form-wrap {
+  display: none !important;
+}
+
+body.is-ipad[data-page="clockin"] .clockin-submit-bar {
+  display: none !important;
+}
+
+body.is-ipad[data-page="clockin"] .ipad-clockin-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: calc(100dvh - 56px);
+  overflow: hidden;
+}
+
+.ipad-ci-left {
+  overflow-y: auto;
+  border-right: 1px solid var(--uz-border);
+  padding: 16px;
+}
+
+.ipad-ci-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.ipad-staff-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ipad-staff-card {
+  background: var(--uz-surface);
+  border: 1.5px solid var(--uz-border);
+  border-radius: 10px;
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.ipad-staff-card--active {
+  border-color: var(--uz-green);
+  background: var(--uz-green-bg);
+}
+
+.ipad-staff-card--inactive {
+  border-color: var(--uz-border);
+  opacity: 0.7;
+}
+
+.ipad-staff-card--selected {
+  border-color: var(--uz-gold) !important;
+  background: var(--uz-amber-bg) !important;
+  opacity: 1;
+}
+
+.ipad-staff-card__name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--uz-text);
+  margin-bottom: 6px;
+}
+
+.ipad-staff-card__badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.ipad-staff-card__badge--active {
+  background: var(--uz-green-bg);
+  color: var(--uz-green);
+  border: 0.5px solid var(--uz-border2);
+}
+
+.ipad-staff-card__badge--inactive {
+  background: var(--uz-amber-bg);
+  color: var(--uz-text2);
+  border: 0.5px solid var(--uz-border);
+}
+
+.ipad-staff-card__time {
+  font-size: 10px;
+  color: var(--uz-text2);
+  margin-top: 5px;
+}
+
+.ipad-ci-right {
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ipad-ci-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--uz-text2);
+  font-size: 14px;
+  min-height: 200px;
+}
+
+.ipad-ci-operation {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ipad-ci-staff-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--uz-text);
+  padding-bottom: 14px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.ipad-ci-form-wrap {
+  padding-top: 16px;
+  padding-bottom: 8px;
+}
+
+.ipad-ci-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.ipad-ci-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ipad-ci-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--uz-text2);
+}
+
+/* ══════════════════════════════════════════════════════════
+   iPad 履歴・修正 右パネル
+   ══════════════════════════════════════════════════════════ */
+.ipad-right-panel {
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.ipad-right-panel__header {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.ipad-placeholder {
+  color: var(--uz-text2);
+  font-size: 14px;
+  text-align: center;
+  padding: 40px 0;
+}
+
+.ipad-record-detail {
+  background: var(--uz-surface);
+  border: 1px solid var(--uz-border);
+  border-radius: 10px;
+  padding: 2px 0;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.ipad-record-detail__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--uz-border);
+  font-size: 13px;
+}
+
+.ipad-record-detail__row:last-child { border-bottom: none; }
+
+.ipad-record-detail__key {
+  color: var(--uz-text2);
+  flex-shrink: 0;
+}
+
+.ipad-record-detail__val {
+  color: var(--uz-text);
+  font-weight: 600;
+  text-align: right;
+}
+
+.ipad-right-action-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-main);
+  cursor: pointer;
+  margin-bottom: 8px;
+  border: none;
+}
+
+.ipad-right-action-btn--edit {
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+  border: 0.5px solid var(--uz-border2);
+}
+
+.ipad-right-action-btn--unlock {
+  background: var(--uz-surface2);
+  color: var(--uz-text2);
+  border: 1px solid var(--uz-border);
+}
+
+.ipad-right-action-btn--approve {
+  background: var(--uz-green-bg);
+  color: var(--uz-green);
+  border: 0.5px solid var(--uz-border2);
+}
+
+.ipad-right-action-btn--reject {
+  background: var(--uz-red-bg);
+  color: var(--uz-red);
+  border: 0.5px solid var(--uz-border2);
+}
+
+.ipad-locked-note {
+  font-size: 13px;
+  color: var(--uz-text2);
+  padding: 10px 0 14px;
+}
+
+.ipad-pending-badge {
+  display: inline-block;
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+  border: 0.5px solid var(--uz-border2);
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.ipad-approve-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* PC幅では承認・却下ボタンを隠す（オーナー専用機能） */
+@media (min-width: 1025px) {
+  .ipad-approve-btns { display: none !important; }
+}
+

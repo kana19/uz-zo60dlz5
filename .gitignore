@@ -1,0 +1,14 @@
+investigation_report_s3g4.md
+
+# Claude Code 設定
+.claude/
+
+# 作業指示書類（Git 管理対象外・ローカル参照用）
+A-9-X_instructions.md
+CLAUDE.md
+investigation_report_*.md
+claude_code_prompt_phase*.md
+
+# 開発ドキュメント（本番GitHub Pages には不要）
+docs/
+_trash/

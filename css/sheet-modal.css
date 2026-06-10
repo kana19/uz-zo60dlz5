@@ -1,0 +1,181 @@
+/* ============================================================
+   sheet-modal.css — 汎用シートモーダル（§12.5-1準拠）
+   全ページで共通利用。app.js / base.css と併用前提。
+   ============================================================ */
+
+/* ── 背景オーバーレイ ─────────────────────────────────────── */
+.sm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.sm-overlay--show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── シート本体 ───────────────────────────────────────────── */
+.sm-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--uz-surface);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 501;
+  max-height: 80vh;
+  transform: translateY(100%);
+  transition: transform 0.25s ease-out;
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  flex-direction: column;
+}
+.sm-sheet--open {
+  transform: translateY(0);
+}
+
+/* ── ドラッグハンドル ─────────────────────────────────────── */
+.sm-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--uz-border);
+  border-radius: 9999px;
+  margin: 10px auto 6px;
+  flex-shrink: 0;
+}
+
+/* ── ヘッダー ─────────────────────────────────────────────── */
+.sm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 20px 10px;
+  border-bottom: 1px solid var(--uz-border);
+  flex-shrink: 0;
+}
+.sm-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--uz-text);
+  font-family: var(--font-main);
+}
+.sm-close-btn {
+  background: none;
+  border: none;
+  color: var(--uz-muted);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-family: var(--font-main);
+  line-height: 1;
+}
+
+/* ── スクロール可能なフォーム領域 ─────────────────────────── */
+.sm-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── フッター（送信ボタン） ───────────────────────────────── */
+.sm-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--uz-border);
+  flex-shrink: 0;
+}
+.sm-submit-btn {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 16px;
+  background: var(--uz-amber-bg);
+  color: var(--uz-gold);
+  border: 1px solid var(--uz-border2);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-main);
+  cursor: pointer;
+  line-height: 1.4;
+  text-align: center;
+  transition: background 0.15s;
+}
+.sm-submit-btn:active { background: rgba(212,175,55,0.22); }
+.sm-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── バリデーションエラー ─────────────────────────────────── */
+.sm-field-error,
+.sm-field-error select,
+.sm-field-error input,
+.sm-field-error textarea {
+  border-color: var(--uz-red) !important;
+}
+
+/* ── body スクロール抑制 ──────────────────────────────────── */
+body.sm-open {
+  overflow: hidden;
+}
+
+/* ── 共通sticky固定ヘッダー（売上・経費モーダル共用） ────── */
+.sm-sticky-header {
+  flex-shrink: 0;
+  background: var(--uz-surface);
+  border-bottom: 1px solid var(--uz-border);
+  padding: 0 16px;
+}
+
+.sm-sticky-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--uz-border);
+}
+
+.sm-sticky-row:last-child {
+  border-bottom: none;
+}
+
+/* ラベル：sales-sm-label・cost-sm-labelと同じ見た目 */
+.sm-sticky-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--uz-text2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  min-width: 48px;
+}
+
+/* 日付入力：date-inputと同じ見た目 */
+.sm-sticky-date-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  background: var(--uz-surface2);
+  border: 1px solid var(--uz-border2);
+  border-radius: var(--radius-md);
+  color: var(--uz-text);
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 600;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.sm-uncollected-check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  flex: 1;
+}

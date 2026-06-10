@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>ウルトラZAIMUくん</title>
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/sheet-modal.css">
+  <link rel="stylesheet" href="css/sales-modal.css">
+  <link rel="stylesheet" href="css/cost-modal.css">
+  <link rel="stylesheet" href="css/uz-input.css">
+  <style>
+  /* ── 出勤状況リスト（ホーム） ─────────────────────────── */
+  .staff-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--uz-border);
+  }
+  .staff-item:last-child { border-bottom: none; }
+  .staff-marker {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .staff-marker--active {
+    border-radius: 50%;
+    background: var(--uz-gold, #d4af37);
+    animation: homeStaffBlink 1.2s ease-in-out infinite;
+  }
+  .staff-marker--off {
+    color: var(--uz-muted);
+  }
+  @keyframes homeStaffBlink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.25; }
+  }
+  .staff-info { flex: 1; min-width: 0; }
+  .staff-name { font-size: 14px; font-weight: 700; }
+  .staff-time { font-size: 12px; color: var(--uz-muted); margin-top: 2px; }
+  .staff-status {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .staff-status--active {
+    background: rgba(212,175,55,0.14);
+    color: var(--uz-gold, #d4af37);
+  }
+  .staff-clockout-btn {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 0.5px solid var(--uz-border2);
+    background: var(--uz-surface);
+    color: var(--uz-text);
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .staff-clockout-btn:active { opacity: 0.75; }
+
+  /* ── ホームタブ切替 ───────────────────────────────────── */
+  .home-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--uz-border);
+    margin-bottom: 0;
+  }
+  .home-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 18px 8px 14px;  /* A-9：タップしやすさのため上下padding拡張（12/4→18/14） */
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    color: var(--uz-text3);
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.02em;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .home-tab:active { opacity: 0.75; }
+  .home-tab.active {
+    background: transparent;
+    color: var(--uz-text);
+    border-bottom: 2px solid var(--uz-text);
+  }
+  .home-tab__icon { font-size: 16px; color: inherit; }
+  .home-tab-panel {
+    border: none;
+    overflow: hidden;
+  }
+  .home-tab-panel .card {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+  .home-tab-panel .card__body {
+    padding: 0;
+  }
+
+  /* ── ホーム上部固定強化（A-9：スクロール時の微動を完全停止） ── */
+  /* base.css の .home-sticky-top に top:0 / sticky 指定があるが、
+     iOS Safari などで他要素の transform / overflow:hidden 影響でずれる場合があるため
+     z-indexを強化して確実に最前面に固定する */
+  body[data-page="home"]:not(.is-ipad) .home-sticky-top {
+    z-index: 100;
+    will-change: transform;  /* GPUレイヤー化でスクロール時の描画ジャンプ防止 */
+  }
+  /* 出勤バナー通知 */
+  #home-attendance-banner {
+    position: fixed;
+    top: -60px;
+    left: 16px; right: 16px;
+    background: var(--uz-surface);
+    border: 1px solid var(--uz-gold);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--uz-text);
+    text-align: center;
+    z-index: 200;
+    transition: top 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 4px 16px var(--uz-border2);
+  }
+  #home-attendance-banner.show { top: 12px; }
+  </style>
+</head>
+<body data-page="home">
+
+<!-- iPad サイドバーナビ（スマホでは非表示／中身は app.js uzRenderSidebar が生成・#sidebar-recent を温存） -->
+<nav class="nav-sidebar" id="nav-sidebar" data-active="home" data-has-recent="1" aria-label="メインナビゲーション"></nav>
+
+<div class="page-wrapper">
+
+  <!-- sticky固定エリア（ヘッダー・日時・ボタン・タブ）スマホのみ表示 -->
+  <div class="home-sticky-top">
+
+    <!-- 店名ヘッダー -->
+    <header class="app-header">
+      <div class="app-header__store" data-uz-brand data-uz-icon-base="icons/" data-uz-fallback="店舗名未設定"></div>
+    </header>
+
+    <!-- 日付・時刻 -->
+    <div class="home-datetime">
+      <span id="header-date" class="home-datetime__date">読み込み中...</span>
+      <span id="header-time" class="home-datetime__time">--:--:--</span>
+    </div>
+
+    <!-- 入力ボタン -->
+    <section aria-label="入力ボタン" style="padding:0 10px 6px;">
+      <div style="display:flex; gap:10px;">
+
+        <div style="position:relative; flex:1;">
+          <button type="button" class="action-btn action-btn--sales action-btn--half" onclick="openSalesModal()">
+            <span class="action-btn__main-label">売上</span>
+            <span class="action-btn__sub">
+              <span>service</span>
+              <i class="ti ti-pencil" aria-hidden="true"></i>
+            </span>
+          </button>
+          <span id="dot-uncollected" class="action-btn__dot uz-timer-dot uz-timer-dot--home" aria-label="売掛タイマー"><span class="uz-timer-dot__core"></span></span>
+        </div>
+
+        <div style="position:relative; flex:1;">
+          <button type="button" class="action-btn action-btn--cost action-btn--half" onclick="openCostModal()">
+            <span class="action-btn__main-label">経費</span>
+            <span class="action-btn__sub">
+              <span>cost</span>
+              <i class="ti ti-pencil" aria-hidden="true"></i>
+            </span>
+          </button>
+          <span id="dot-payable" class="action-btn__dot uz-timer-dot uz-timer-dot--home" aria-label="買掛タイマー"><span class="uz-timer-dot__core"></span></span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- タブ -->
+    <div class="home-tabs" id="home-tabs">
+      <button class="home-tab" id="tab-pl" onclick="switchHomeTab('pl')" type="button">
+        <i class="ti ti-chart-bar home-tab__icon" aria-hidden="true"></i>
+        <span class="home-tab__label">今月の損益</span>
+      </button>
+      <button class="home-tab" id="tab-attendance" onclick="switchHomeTab('attendance')" type="button">
+        <i class="ti ti-users home-tab__icon" aria-hidden="true"></i>
+        <span class="home-tab__label">出勤状況</span>
+      </button>
+    </div>
+
+  </div><!-- /home-sticky-top -->
+
+  <!-- メインコンテンツ -->
+  <main class="page-body">
+
+    <!-- ── iPad ホームダッシュボード（iPad のみ表示） ─── -->
+    <div class="ipad-home-dashboard" id="ipad-home-dashboard">
+
+      <!-- 左カラム：①損益（上）＋②グラフ（下） -->
+      <div class="ipad-home-left">
+
+        <!-- ① 損益（CSVパレット常時表示） -->
+        <div class="ipad-dash-section ipad-dash-section--pl">
+          <div class="ipad-dash-header">
+            <div class="ipad-pl-tabs" id="ipad-pl-tabs">
+              <button type="button" class="ipad-pl-tab active" id="ipad-pl-tab-monthly" onclick="switchIpadPLTab('monthly')">月次損益</button>
+              <button type="button" class="ipad-pl-tab" id="ipad-pl-tab-ytd" onclick="switchIpadPLTab('ytd')">年度累計</button>
+            </div>
+            <select id="ipad-month-select" class="ipad-month-select" aria-label="表示月"></select>
+            <select id="ipad-year-select" class="ipad-month-select" aria-label="表示年度" style="display:none"></select>
+          </div>
+          <table class="ipad-dash-table" id="ipad-pl-table">
+            <tbody>
+              <tr><td>売上</td><td class="ipad-td-r" id="ipad-pl-sales">¥—</td></tr>
+              <tr><td>仕入原価</td><td class="ipad-td-r" id="ipad-pl-cogs">¥—</td></tr>
+              <tr class="row-gross"><td>粗利</td><td class="ipad-td-r" id="ipad-pl-gross">¥—</td></tr>
+              <tr><td>販管費</td><td class="ipad-td-r" id="ipad-pl-sga">¥—</td></tr>
+              <tr class="row-profit"><td>経常利益</td><td class="ipad-td-r" id="ipad-pl-profit">¥—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ② 月次推移グラフ -->
+        <div class="ipad-dash-section ipad-dash-section--chart">
+          <div class="ipad-dash-header">
+            <span class="ipad-dash-header__title">月次推移</span>
+            <div class="ipad-chart-legend">
+              <span class="ipad-legend-item"><i class="ipad-legend-dot" data-c="cogs"></i>仕入原価</span>
+              <span class="ipad-legend-item"><i class="ipad-legend-dot" data-c="sga"></i>販管費</span>
+              <span class="ipad-legend-item"><i class="ipad-legend-dot" data-c="profit"></i>経常利益</span>
+            </div>
+          </div>
+          <div class="ipad-chart-wrap">
+            <div class="ipad-chart-loading" id="ipad-chart-loading">読み込み中...</div>
+            <canvas id="ipad-pl-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- 税理士・銀行提出用CSV（左カラム最下部・常時表示） -->
+        <div class="ipad-tax-dl-panel">
+          <div class="ipad-tax-dl-label">税理士・銀行提出用CSV</div>
+          <div class="ipad-tax-dl-row">
+            <select id="ipad-tax-from" class="ipad-tax-select" aria-label="開始月"></select>
+            <span class="ipad-tax-sep">〜</span>
+            <select id="ipad-tax-to" class="ipad-tax-select" aria-label="終了月"></select>
+          </div>
+          <button id="ipad-tax-dl-exec" class="ipad-tax-dl-btn" type="button">ダウンロード実行</button>
+        </div>
+
+        <!-- 確定申告タイマー（期間中のみ） -->
+        <div id="ipad-tax-timer-right"></div>
+
+      </div><!-- /ipad-home-left -->
+
+      <!-- ③ 右カラム：直近入力／出勤状況 タブ切替（§2-2・全高） -->
+      <div class="ipad-home-right">
+        <div class="ipad-dash-section ipad-dash-section--full">
+          <div class="ipad-pl-tabs" id="ipad-right-tabs">
+            <button type="button" class="ipad-pl-tab active" id="ipad-rt-tab-recent" onclick="switchIpadRightTab('recent')">直近の入力</button>
+            <button type="button" class="ipad-pl-tab" id="ipad-rt-tab-attend" onclick="switchIpadRightTab('attend')">出勤状況</button>
+          </div>
+          <div id="ipad-rt-panel-recent">
+            <table class="ipad-dash-table ipad-recent-table" id="ipad-recent-table">
+              <thead>
+                <tr>
+                  <th>登録日</th>
+                  <th>操作</th>
+                  <th>発生日</th>
+                  <th>区分</th>
+                  <th>適用</th>
+                  <th>メモ</th>
+                  <th class="ipad-td-r">金額</th>
+                </tr>
+              </thead>
+              <tbody id="ipad-recent-body"><!-- home.js が描画 --></tbody>
+            </table>
+            <div class="ipad-dash-empty" id="ipad-recent-empty" hidden>今月の記録はありません</div>
+          </div>
+          <div id="ipad-rt-panel-attend" style="display:none;">
+            <div id="ipad-staff-list"><!-- home.js が描画 --></div>
+          </div>
+        </div>
+      </div><!-- /ipad-home-right -->
+
+
+    </div><!-- /ipad-home-dashboard -->
+
+    <!-- ── 左カラム（iPad）/ 通常表示（スマホ） ─── -->
+    <div class="ipad-col--left">
+
+        <!-- 損益パネル -->
+        <div id="panel-pl" class="home-tab-panel">
+          <div class="card">
+            <div class="card__body">
+              <div id="pl-month-label" class="pl-month-label">読み込み中...</div>
+
+              <!-- 売上行（アコーディオン） -->
+              <div class="pl-row pl-row--accordion" id="pl-row-sales">
+                <button class="pl-accordion-btn" type="button" onclick="togglePlAccordion('sales')" aria-expanded="false" aria-controls="pl-detail-sales">
+                  <span class="pl-label-wrap">
+                    <span class="pl-label">売上</span>
+                    <i class="ti ti-chevron-down pl-chevron" id="pl-chev-sales" aria-hidden="true"></i>
+                  </span>
+                  <span id="pl-sales" class="pl-value">¥—</span>
+                </button>
+                <div class="pl-accordion-detail" id="pl-detail-sales" hidden></div>
+              </div>
+
+              <!-- 仕入原価行（アコーディオン） -->
+              <div class="pl-row pl-row--accordion pl-row--surface" id="pl-row-cogs">
+                <button class="pl-accordion-btn" type="button" onclick="togglePlAccordion('cogs')" aria-expanded="false" aria-controls="pl-detail-cogs">
+                  <span class="pl-label-wrap">
+                    <span class="pl-label">仕入原価</span>
+                    <i class="ti ti-chevron-down pl-chevron" id="pl-chev-cogs" aria-hidden="true"></i>
+                  </span>
+                  <span id="pl-cogs" class="pl-value">¥—</span>
+                </button>
+                <div class="pl-accordion-detail" id="pl-detail-cogs" hidden></div>
+              </div>
+
+              <!-- 粗利行（アコーディオンなし） -->
+              <div class="pl-row pl-row--result">
+                <span class="pl-label-wrap">
+                  <span class="pl-label">粗利</span>
+                </span>
+                <span id="pl-gross" class="pl-value">¥—</span>
+              </div>
+
+              <!-- 販管費行（アコーディオン） -->
+              <div class="pl-row pl-row--accordion pl-row--surface" id="pl-row-sga">
+                <button class="pl-accordion-btn" type="button" onclick="togglePlAccordion('sga')" aria-expanded="false" aria-controls="pl-detail-sga">
+                  <span class="pl-label-wrap">
+                    <span class="pl-label">販管費</span>
+                    <i class="ti ti-chevron-down pl-chevron" id="pl-chev-sga" aria-hidden="true"></i>
+                  </span>
+                  <span id="pl-sga" class="pl-value">¥—</span>
+                </button>
+                <div class="pl-accordion-detail" id="pl-detail-sga" hidden></div>
+              </div>
+
+              <!-- 経常利益行 -->
+              <div class="pl-row pl-row--highlight">
+                <span class="pl-label-wrap">
+                  <span class="pl-label">経常利益</span>
+                </span>
+                <span id="pl-profit" class="pl-value">¥—</span>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right; padding:6px 4px 0;">
+            <a href="pl.html" style="font-size:12px; color:var(--uz-muted); text-decoration:none;">詳細を見る ›</a>
+          </div>
+        </div>
+
+        <!-- 出勤状況パネル -->
+        <div id="panel-attendance" class="home-tab-panel" style="display:none">
+          <div class="card">
+            <div class="card__body" style="padding:0;">
+              <div id="staff-list">
+                <!-- home.js が描画 -->
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right; padding:6px 4px 0;">
+            <a href="history.html#attendance" style="font-size:12px; color:var(--uz-muted); text-decoration:none;">出勤記録へ ›</a>
+          </div>
+        </div>
+
+    </div><!-- /ipad-col--left -->
+
+    <!-- ── 右カラム（iPad）/ 通常表示（スマホ） ─── -->
+    <div class="ipad-col--right">
+
+      <!-- 確定申告タイマー -->
+      <div id="tax-timer" style="display:none"></div>
+
+    </div><!-- /ipad-col--right -->
+
+  </main>
+
+</div><!-- /page-wrapper -->
+
+<!-- ── ボトムナビゲーション（スマホ用） ──────────────────── -->
+<nav class="bottom-nav" aria-label="メインナビゲーション">
+
+  <a href="index.html" class="nav-item nav-item--active" aria-current="page">
+    <i class="ti ti-planet nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">ホーム</span>
+  </a>
+
+  <a href="history.html" class="nav-item">
+    <i class="ti ti-moon nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">月次管理</span>
+  </a>
+
+  <a href="settings.html" class="nav-item">
+    <i class="ti ti-settings nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">設定</span>
+  </a>
+</nav>
+
+<!-- 出勤バナー通知 -->
+<div id="home-attendance-banner"></div>
+
+<!-- ローディングオーバーレイ -->
+<div id="loading-overlay" class="loading-overlay" aria-hidden="true">
+  <div class="spinner"></div>
+</div>
+
+<!-- AIフック（フェーズ3用・削除禁止） -->
+<div id="receipt-capture-area" style="display:none"></div>
+<div id="csv-import-area"      style="display:none"></div>
+<div id="ai-suggestion-area"   style="display:none"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/sheet-modal.js"></script>
+<script src="js/sales.js"></script>
+<script src="js/cost.js"></script>
+<script src="js/home.js"></script>
+<script src="js/uz-input.js"></script>
+</body>
+</html>

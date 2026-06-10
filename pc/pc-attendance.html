@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>出勤管理 | ウルトラZAIMUくんレオ</title>
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="css/pc.css">
+<link rel="stylesheet" href="css/pc-attendance.css">
+</head>
+<body class="pc-body">
+<div id="pc-app" class="pc-layout">
+  <main class="pc-main" id="pc-main">
+
+    <!-- ヘッダー：月ナビ + フィルター + 一括確定 -->
+    <div class="att-header">
+      <div class="att-header__left">
+        <select class="att-filter" id="staffFilter">
+          <option value="all">全て</option>
+          <option value="employed_full">常勤雇用</option>
+          <option value="employed_part">臨時バイト</option>
+          <option value="contractor">委託・外注</option>
+        </select>
+      </div>
+      <div class="att-header__center">
+        <button class="att-month-nav" id="prevMonth">&lt;</button>
+        <span class="att-month-label" id="monthLabel">2026年5月</span>
+        <button class="att-month-nav" id="nextMonth">&gt;</button>
+      </div>
+      <div class="att-header__right">
+        <button class="att-bulk-confirm-btn" id="bulkConfirmBtn">一括確定</button>
+      </div>
+    </div>
+
+    <!-- メインテーブル（キングExcel準拠：1テーブル統合） -->
+    <div class="att-table-wrap" id="tableWrap">
+      <table class="att-table" id="mainTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- 経営メモバー -->
+    <div class="att-memo-bar" id="memoBar" style="display:none;">
+      <label class="att-memo-bar__label" id="memoLabel">経営メモ</label>
+      <textarea class="att-memo-bar__input" id="memoInput" rows="2" placeholder="歩合の設定根拠・給与振込口座・スタッフとの約束など"></textarea>
+      <button class="att-memo-bar__save" id="memoSave">メモ保存</button>
+    </div>
+
+  </main>
+</div>
+
+<!-- 日別セル編集ポップオーバー -->
+<div class="att-popover" id="dayCellPopover" style="display:none;">
+  <div class="att-popover__inner">
+    <div class="att-popover__header" id="popoverHeader"></div>
+    <div class="att-popover__field">
+      <label>出勤時刻</label>
+      <input type="time" id="popClockIn">
+    </div>
+    <div class="att-popover__field">
+      <label>退勤時刻</label>
+      <input type="time" id="popClockOut">
+    </div>
+    <div class="att-popover__field">
+      <label>メモ</label>
+      <input type="text" id="popMemo" placeholder="遅刻理由・早退等">
+    </div>
+    <div class="att-popover__actions">
+      <button class="att-popover__cancel" id="popCancel">キャンセル</button>
+      <button class="att-popover__save" id="popSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 確定ダイアログ（個別・一括共用） -->
+<div class="att-confirm-dialog" id="confirmDialog" style="display:none;">
+  <div class="att-confirm-dialog__inner att-confirm-dialog__inner--wide">
+    <h3 id="confirmTitle">給与確定</h3>
+    <div class="att-confirm-dialog__body" id="confirmBody"></div>
+    <div class="att-confirm-dialog__actions">
+      <button class="att-confirm-dialog__cancel" id="confirmCancel">キャンセル</button>
+      <button class="att-confirm-dialog__ok" id="confirmOk">確定</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="js/pc-common.js"></script>
+<script src="js/pc-attendance.js"></script>
+</body>
+</html>

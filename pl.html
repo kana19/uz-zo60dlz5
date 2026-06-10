@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>損益サマリー — ウルトラZAIMUくん</title>
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/pl.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.9.0/dist/tabler-icons.min.css">
+</head>
+<body>
+
+<!-- iPad サイドバーナビ（スマホでは非表示） -->
+<nav class="nav-sidebar" aria-label="メインナビゲーション">
+  <div class="nav-sidebar__brand">
+    <div class="nav-sidebar__logo" data-uz-brand data-uz-icon-base="icons/" data-uz-fallback="ウルトラZAIMUくん"></div>
+    <span id="sidebar-timer-dot" class="uz-timer-dot uz-timer-dot--sidebar" aria-hidden="true" title="売掛・買掛のお知らせ"><span class="uz-timer-dot__core"></span></span>
+  </div>
+  <a href="index.html" class="sidebar-item sidebar-item--active" aria-current="page">
+    <i class="ti ti-home sidebar-item__icon" aria-hidden="true"></i>
+    <span>ホーム</span>
+  </a>
+  <a href="sales.html" class="sidebar-item">
+    <i class="ti ti-cash sidebar-item__icon" aria-hidden="true"></i>
+    <span>売上入力</span>
+  </a>
+  <a href="cost.html" class="sidebar-item">
+    <i class="ti ti-credit-card sidebar-item__icon" aria-hidden="true"></i>
+    <span>コスト入力</span>
+  </a>
+  <a href="history.html" class="sidebar-item">
+    <i class="ti ti-history sidebar-item__icon" aria-hidden="true"></i>
+    <span>履歴・修正</span>
+  </a>
+  <a href="settings.html" class="sidebar-item">
+    <i class="ti ti-settings sidebar-item__icon" aria-hidden="true"></i>
+    <span>設定</span>
+  </a>
+</nav>
+
+<div class="page-wrapper">
+
+  <!-- ページタイトルヘッダー -->
+  <header class="pl-header">
+    <span class="pl-header__title">損益サマリー</span>
+  </header>
+
+  <!-- タブバー（月次 / 年度累計） -->
+  <div class="pl-tab-bar" role="tablist" aria-label="表示期間">
+    <button class="pl-tab pl-tab--active"
+            data-tab="monthly"
+            role="tab"
+            aria-selected="true"
+            aria-controls="monthly-section">月次</button>
+    <button class="pl-tab"
+            data-tab="ytd"
+            role="tab"
+            aria-selected="false"
+            aria-controls="ytd-section">年度累計</button>
+  </div>
+
+  <!-- 比較インフォバナー（月次・年度累計 共用） -->
+  <div id="compare-info"
+       class="pl-compare-info"
+       role="status"
+       aria-live="polite"></div>
+
+  <!-- ===== 月次セクション ===== -->
+  <section id="monthly-section" role="tabpanel" aria-labelledby="tab-monthly">
+
+    <!-- 月選択ナビ＋前年同月比（同一行） -->
+    <div class="pl-period-nav">
+      <button id="period-prev" class="pl-period-btn" type="button" aria-label="前の月">
+        <i class="ti ti-chevron-left"></i>
+      </button>
+      <span id="period-label" class="pl-period-label">読み込み中...</span>
+      <button id="period-next" class="pl-period-btn" type="button" aria-label="次の月">
+        <i class="ti ti-chevron-right"></i>
+      </button>
+      <div class="pl-compare-wrap">
+        <button id="compare-btn" class="pl-compare-btn" type="button" aria-pressed="false">前年同月比</button>
+      </div>
+    </div>
+
+    <!-- PLテーブル（月次） -->
+    <div id="pl-table" class="pl-table" role="region" aria-label="月次損益">
+      <!-- pl.js が描画 -->
+    </div>
+
+    <!-- 税理士用CSV DL（カード型） -->
+    <div class="tax-dl-card">
+      <div class="tax-dl-card__label">税理士用CSV</div>
+      <div class="tax-dl-card__row">
+        <select id="tax-from-month" class="tax-dl-select" aria-label="開始月"></select>
+        <span class="tax-dl-sep">〜</span>
+        <select id="tax-to-month" class="tax-dl-select" aria-label="終了月"></select>
+      </div>
+      <button id="tax-download-btn" class="btn-tax-dl" type="button">
+        <i class="ti ti-download"></i> ダウンロード
+      </button>
+    </div>
+
+    <div class="pl-footer-space"></div>
+  </section>
+
+  <!-- ===== 年度累計セクション ===== -->
+  <section id="ytd-section" hidden role="tabpanel" aria-labelledby="tab-ytd">
+
+    <!-- 年選択ナビ＋前年比較（同一行） -->
+    <div class="pl-ytd-nav">
+      <button id="ytd-prev" class="pl-period-btn" type="button" aria-label="前の年">
+        <i class="ti ti-chevron-left"></i>
+      </button>
+      <span id="ytd-label" class="pl-ytd-label">読み込み中...</span>
+      <button id="ytd-next" class="pl-period-btn" type="button" aria-label="次の年">
+        <i class="ti ti-chevron-right"></i>
+      </button>
+      <div class="pl-compare-wrap">
+        <button id="ytd-compare-btn" class="pl-compare-btn" type="button" aria-pressed="false">前年比較</button>
+      </div>
+    </div>
+
+    <!-- PLテーブル（年度累計） -->
+    <div id="ytd-pl-table"
+         class="pl-table"
+         role="region"
+         aria-label="年度累計損益">
+      <!-- pl.js が描画 -->
+    </div>
+
+    <div class="pl-footer-space"></div>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<!-- ボトムナビゲーション -->
+<nav class="bottom-nav" aria-label="メインナビゲーション">
+
+  <a href="index.html" class="nav-item nav-item--active" aria-current="page">
+    <i class="ti ti-planet nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">ホーム</span>
+  </a>
+
+  <a href="history.html" class="nav-item">
+    <i class="ti ti-moon nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">月次管理</span>
+  </a>
+
+  <a href="settings.html" class="nav-item">
+    <i class="ti ti-settings nav-item__icon" aria-hidden="true"></i>
+    <span class="nav-item__label">設定</span>
+  </a>
+</nav>
+
+<!-- AIフック（フェーズ3用・削除禁止） -->
+<div id="receipt-capture-area" style="display:none"></div>
+<div id="csv-import-area"      style="display:none"></div>
+<div id="ai-suggestion-area"   style="display:none"></div>
+
+<script src="js/app.js"></script>
+<script src="js/pl.js"></script>
+</body>
+</html>

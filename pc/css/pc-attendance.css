@@ -1,0 +1,388 @@
+/* ==========================================
+   PC版 出勤管理画面 (attendance.html)
+   A-2-Y v2: キングExcel準拠 1テーブル統合
+   ========================================== */
+
+/* --- ヘッダー --- */
+.att-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--uz-border, rgba(0,0,0,0.10));
+  flex-shrink: 0;
+}
+.att-header__left,
+.att-header__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.att-header__center {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.att-filter {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--uz-border, rgba(0,0,0,0.10));
+  background: var(--uz-bg, #FFFFFF);
+  color: var(--uz-text, #1A1A1A);
+  cursor: pointer;
+}
+.att-month-nav {
+  background: none;
+  border: 1px solid var(--uz-border2, rgba(0,0,0,0.20));
+  color: var(--uz-text, #1A1A1A);
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.att-month-nav:hover { background: rgba(0,0,0,0.04); }
+.att-month-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--uz-text, #1A1A1A);
+  min-width: 100px;
+  text-align: center;
+}
+.att-bulk-confirm-btn {
+  padding: 6px 18px;
+  border: none;
+  border-radius: 5px;
+  background: var(--uz-gold, #333333);
+  color: var(--uz-on-accent, #FFFFFF);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.att-bulk-confirm-btn:hover { opacity: 0.9; }
+.att-bulk-confirm-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* --- メインテーブル --- */
+.att-table-wrap {
+  flex: 1;
+  overflow: auto;
+  height: calc(100vh - 120px);
+}
+.att-table {
+  border-collapse: collapse;
+  font-size: 11px;
+  width: max-content;
+  min-width: 100%;
+}
+.att-table th,
+.att-table td {
+  padding: 3px 8px;
+  border: 1px solid var(--uz-border, rgba(0,0,0,0.10));
+  white-space: nowrap;
+}
+
+/* ヘッダー（スタッフ名） */
+.att-table thead th {
+  background: var(--uz-surface, #F5F5F5);
+  color: var(--uz-text, #1A1A1A);
+  font-weight: 600;
+  font-size: 12px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  vertical-align: bottom;
+  padding: 6px 8px;
+}
+.att-table thead th .att-th-sub {
+  font-weight: 400;
+  font-size: 9px;
+  color: var(--uz-text-muted, #999999);
+  display: block;
+}
+
+/* 行ラベル列（左固定） */
+.att-row-label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--uz-surface, #F5F5F5);
+  font-size: 11px;
+  color: var(--uz-text-muted, #999999);
+  text-align: right;
+  padding-right: 10px;
+  min-width: 90px;
+  font-weight: 500;
+}
+/* ヘッダーの左上角 */
+.att-table thead th.att-row-label {
+  z-index: 4;
+}
+
+/* --- 日付セル --- */
+.att-day-cell {
+  cursor: pointer;
+  text-align: center;
+  min-width: 90px;
+  font-size: 10px;
+  color: var(--uz-text-muted, #999999);
+  transition: background 0.12s;
+  vertical-align: middle;
+  height: 22px;
+}
+.att-day-cell:hover { background: rgba(0,0,0,0.03); }
+.att-day-cell--active {
+  color: var(--uz-text, #1A1A1A);
+  background: rgba(201,168,76,0.06);
+}
+.att-day-cell--pending {
+  background: var(--uz-amber-bg, rgba(245,158,11,0.1));
+  color: var(--uz-amber);
+}
+.att-money-line {
+  color: var(--uz-info);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+.att-day-cell--money-only { background: rgba(167,139,250,0.08); }
+.att-day-cell--project { box-shadow: inset 0 0 0 2px var(--uz-info); }
+
+/* --- 区切り行 --- */
+.att-sep-row td {
+  border-top: 2px solid var(--uz-gold, rgba(201,168,76,0.3));
+  height: 4px;
+  padding: 0;
+}
+
+/* --- 給与計算行 --- */
+.att-calc-cell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--uz-text, #1A1A1A);
+  min-width: 90px;
+}
+.att-calc-cell--editable {
+  cursor: text;
+}
+.att-calc-cell--editable:hover { background: rgba(0,0,0,0.02); }
+
+.att-calc-cell--gross {
+  font-weight: 700;
+  font-size: 12px;
+}
+.att-calc-cell--net {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--uz-gold, #333333);
+}
+.att-calc-cell--muted {
+  color: var(--uz-text-muted, #999999);
+  font-size: 10px;
+}
+.att-calc-cell--total {
+  font-weight: 700;
+  color: var(--uz-gold, #333333);
+}
+
+/* インライン入力 */
+.att-inline-input {
+  width: 80px;
+  background: var(--uz-bg, #FFFFFF);
+  border: 1px solid var(--uz-gold, #333333);
+  border-radius: 3px;
+  color: var(--uz-text, #1A1A1A);
+  padding: 1px 6px;
+  font-size: 11px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.att-inline-input:focus { outline: none; }
+
+/* セレクト */
+.att-inline-select {
+  background: var(--uz-bg, #FFFFFF);
+  border: 1px solid var(--uz-border, rgba(0,0,0,0.10));
+  border-radius: 3px;
+  color: var(--uz-text, #1A1A1A);
+  font-size: 10px;
+  padding: 1px 4px;
+  cursor: pointer;
+}
+
+/* ステータスバッジ */
+.att-status-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.att-status-badge--pending { background: var(--uz-amber-bg); color: var(--uz-amber); }
+.att-status-badge--confirmed { background: var(--uz-green-bg); color: var(--uz-success); }
+.att-status-badge--skipped { background: var(--uz-surface2); color: var(--uz-text3); }
+
+/* 確定ボタン */
+.att-confirm-btn {
+  padding: 3px 10px;
+  border: 1px solid var(--uz-gold, #333333);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--uz-gold, #333333);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.att-confirm-btn:hover { background: rgba(201,168,76,0.12); }
+.att-confirm-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* 案件除外注釈 */
+.att-exclude-note {
+  font-size: 9px;
+  color: var(--uz-info);
+}
+
+/* 調整適用メモ入力 */
+.att-adj-memo {
+  width: 80px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--uz-border2, rgba(0,0,0,0.20));
+  color: var(--uz-text-muted, #999999);
+  font-size: 10px;
+  padding: 1px 4px;
+  text-align: center;
+}
+.att-adj-memo:focus {
+  outline: none;
+  border-bottom-color: var(--uz-gold, #333333);
+  color: var(--uz-text, #1A1A1A);
+}
+.att-adj-memo::placeholder {
+  color: rgba(136,136,136,0.4);
+}
+
+/* 科目別フッター行 */
+.att-cat-row td {
+  background: var(--uz-surface, #F5F5F5);
+  border-top: 2px solid var(--uz-border, rgba(0,0,0,0.10));
+}
+
+/* --- 経営メモバー --- */
+.att-memo-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--uz-surface, #F5F5F5);
+  border-top: 1px solid var(--uz-border, rgba(0,0,0,0.10));
+}
+.att-memo-bar__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--uz-gold, #333333);
+  min-width: 70px;
+  padding-top: 4px;
+}
+.att-memo-bar__input {
+  flex: 1;
+  background: var(--uz-bg, #FFFFFF);
+  border: 1px solid var(--uz-border, rgba(0,0,0,0.10));
+  border-radius: 4px;
+  color: var(--uz-text, #1A1A1A);
+  padding: 6px 8px;
+  font-size: 11px;
+  resize: vertical;
+  min-height: 36px;
+}
+.att-memo-bar__input:focus { outline: none; border-color: var(--uz-gold, #333333); }
+.att-memo-bar__save {
+  padding: 6px 14px;
+  border: 1px solid var(--uz-gold, #333333);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--uz-gold, #333333);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* --- ポップオーバー --- */
+.att-popover {
+  position: fixed;
+  z-index: 1000;
+  background: var(--uz-surface, #F5F5F5);
+  border: 1px solid var(--uz-border2, rgba(0,0,0,0.20));
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  width: 240px;
+}
+.att-popover__inner { padding: 12px; }
+.att-popover__header {
+  font-size: 12px; font-weight: 600;
+  color: var(--uz-gold, #333333); margin-bottom: 10px;
+}
+.att-popover__field { margin-bottom: 8px; }
+.att-popover__field label {
+  font-size: 10px; color: var(--uz-text-muted, #999999);
+  display: block; margin-bottom: 3px;
+}
+.att-popover__field input {
+  width: 100%;
+  background: var(--uz-bg, #FFFFFF);
+  border: 1px solid var(--uz-border, rgba(0,0,0,0.10));
+  border-radius: 4px;
+  color: var(--uz-text, #1A1A1A);
+  padding: 5px 8px; font-size: 12px;
+}
+.att-popover__actions {
+  display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;
+}
+.att-popover__cancel, .att-popover__save {
+  padding: 5px 12px; border-radius: 4px; font-size: 11px;
+  cursor: pointer; border: none;
+}
+.att-popover__cancel { background: transparent; color: var(--uz-text-muted, #999999); }
+.att-popover__save { background: var(--uz-gold, #333333); color: var(--uz-text); font-weight: 600; }
+
+/* --- 確定ダイアログ --- */
+.att-confirm-dialog {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+}
+.att-confirm-dialog__inner {
+  background: var(--uz-surface, #F5F5F5);
+  border: 1px solid var(--uz-border2, rgba(0,0,0,0.20));
+  border-radius: 10px; padding: 24px;
+  max-width: 380px; width: 90%;
+}
+.att-confirm-dialog__inner--wide { max-width: 480px; }
+.att-confirm-dialog__inner h3 {
+  font-size: 14px; color: var(--uz-text, #1A1A1A); margin-bottom: 16px;
+}
+.att-confirm-dialog__body {
+  font-size: 12px; color: var(--uz-text, #1A1A1A);
+  line-height: 1.7; margin-bottom: 20px;
+}
+.att-confirm-dialog__actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+.att-confirm-dialog__cancel {
+  padding: 8px 18px;
+  border: 1px solid var(--uz-border2, rgba(0,0,0,0.20));
+  border-radius: 6px; background: transparent;
+  color: var(--uz-text-muted, #999999); font-size: 12px; cursor: pointer;
+}
+.att-confirm-dialog__ok {
+  padding: 8px 24px; border: none; border-radius: 6px;
+  background: var(--uz-gold, #333333); color: var(--uz-text);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+}
