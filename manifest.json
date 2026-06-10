@@ -1,15 +1,11 @@
 {
-  "name": "ウルトラZAIMUくん",
-  "short_name": "ZAIMUくん",
-  "description": "半自動経営システム。日々の企業活動を入力するだけで財務諸表・請求書等を自動算出。アナログ50:自動50の新しい経営支援ツール。",
-  "lang": "ja",
+  "name": "テスト0610 - ウルトラZAIMUくん",
+  "short_name": "テスト0610",
+  "description": "ウルトラZAIMUくん オーナーPWA - テスト0610",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF",
-  "categories": ["finance", "business", "productivity"],
+  "theme_color": "#0B1842",
   "icons": [
     {
       "src": "icons/icon-192.png",
